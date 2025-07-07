@@ -1,14 +1,16 @@
 package com.pahanaedu.module.user.module.staff.repository;
+
 import com.pahanaedu.common.interfaces.IRepositoryPrototype;
 import com.pahanaedu.config.DbConfig;
 import com.pahanaedu.module.user.model.User;
-import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.module.user.module.staff.model.Staff;
+import com.pahanaedu.module.user.module.staff.util.StaffUtils;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
@@ -70,58 +72,32 @@ public class StaffRepository implements IRepositoryPrototype<User, Staff> {
     @Override
     public Staff save(User staff) {
 
-        Staff checkingStaff = findById(staff.getId());
-
-        if (checkingStaff != null) {
-            update(checkingStaff);
-        } else {
-            String query = "insert into ";
-        }
-
-        return null;
-    }
-
-    private void update(Staff staff) {
-
-        String updateUserSQL = """
-                    UPDATE "user"
-                    SET name = ?, role = ?, updated_at = ?
-                    WHERE id = ?
-                """;
-
-        String updateStaffSQL = """
-                    UPDATE staff
-                    SET username = ?, is_active = ?
-                    WHERE id = ?
-                """;
-
+        String userQuery = "insert into users(name, role, created_at, updated_at) values(?, ?, ?, ?)";
+        Staff newStaff = null;
         try (
                 Connection connection = db.getConnection();
+                PreparedStatement statement = connection.prepareStatement(userQuery)
         ) {
-            connection.setAutoCommit(false);
+            statement.setString(1, staff.getName());
+            statement.setString(2, staff.getRole());
+            statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+            ResultSet result = statement.executeQuery();
 
-            try (PreparedStatement updateUserStmt = connection.prepareStatement(updateUserSQL)) {
-                updateUserStmt.setString(1, staff.getName());
-                updateUserStmt.setString(2, staff.getRole());
-                updateUserStmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-                updateUserStmt.setInt(4, staff.getId().intValue());
-                updateUserStmt.executeUpdate();
+            if (result.next()) {
+                newStaff = StaffUtils.getStaffByResultSet(result);
             }
-
-            try (PreparedStatement updateStaffStmt = connection.prepareStatement(updateStaffSQL)) {
-                updateStaffStmt.setString(1, staff.getUsername());
-                updateStaffStmt.setBoolean(2, staff.getIsActive());
-                updateStaffStmt.setInt(3, staff.getId().intValue());
-                updateStaffStmt.executeUpdate();
-            }
-
-            connection.commit();
+            System.out.println();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
+        return newStaff;
+
     }
+
+
 
 
     @Override
