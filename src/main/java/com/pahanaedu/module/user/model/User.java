@@ -18,6 +18,10 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public User(String name) {
+        this.name = name;
+    }
+
     public User() {
     }
 

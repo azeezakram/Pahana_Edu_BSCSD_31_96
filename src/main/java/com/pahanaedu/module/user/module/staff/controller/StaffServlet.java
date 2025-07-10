@@ -1,36 +1,30 @@
 package com.pahanaedu.module.user.module.staff.controller;
 
 import com.pahanaedu.common.utill.JsonUtil;
-import com.pahanaedu.module.user.module.staff.config.StaffAutherization;
-import com.pahanaedu.module.user.module.staff.dto.StaffAuthorizationDTO;
 import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
-import com.pahanaedu.module.user.module.staff.service.StaffService;
+import com.pahanaedu.module.user.module.staff.model.Staff;
+import com.pahanaedu.module.user.module.staff.service.StaffServiceImpl;
+import com.pahanaedu.module.user.module.staff.util.RequestBodyExtractor;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/api/staff/*")
 public class StaffServlet extends HttpServlet {
-    private StaffService staffService;
+    private StaffServiceImpl staffService;
 
     public void init() {
-        this.staffService = new StaffService();
+        this.staffService = new StaffServiceImpl();
     }
 
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
-
-        if (!StaffAutherization.isAuthorize(req)) {
-            JsonUtil.sendJson(res, "{\"error\" : \"You're unauthorized\"}", HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
 
         if (pathInfo == null || pathInfo.equals("/")) {
             List<StaffWithoutPasswordDTO> staffs = staffService.findAll();
@@ -59,11 +53,39 @@ public class StaffServlet extends HttpServlet {
             JsonUtil.sendJson(res, "{\"error\" : \"Invalid staff id\"}", HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
         }
 
     }
 
 
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+
+                Staff staff = JsonUtil.extract(req, Staff.class);
+
+                StaffWithoutPasswordDTO createdStaff = staffService.create(staff);
+
+                if (createdStaff != null) {
+                    System.out.println(createdStaff);
+                    JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
+                    return;
+                }
+
+                JsonUtil.sendJson(res, "{\"error\" : \"Staffs not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+//            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+
+
+    }
 
 
 }

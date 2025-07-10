@@ -1,20 +1,21 @@
 package com.pahanaedu.module.user.module.staff.service;
 
 import com.pahanaedu.common.interfaces.IServicePrototype;
+import com.pahanaedu.module.user.module.staff.dto.StaffCreationDTO;
 import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.module.user.module.staff.mapper.StaffMapper;
 import com.pahanaedu.module.user.module.staff.model.Staff;
-import com.pahanaedu.module.user.module.staff.repository.StaffRepository;
+import com.pahanaedu.module.user.module.staff.repository.StaffRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
 
-public class StaffService implements IServicePrototype<StaffWithoutPasswordDTO> {
+public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPasswordDTO> {
 
-    private final StaffRepository staffRepository;
+    private final StaffRepositoryImpl staffRepository;
 
-    public StaffService() {
-        this.staffRepository = new StaffRepository();
+    public StaffServiceImpl() {
+        this.staffRepository = new StaffRepositoryImpl();
     }
 
 
@@ -32,7 +33,7 @@ public class StaffService implements IServicePrototype<StaffWithoutPasswordDTO> 
 
         return staffs != null ? staffs
                 .stream()
-                .map(staff -> StaffMapper.toStaffWithoutPasswordDTO(staff))
+                .map(StaffMapper::toStaffWithoutPasswordDTO)
                 .toList() : null;
 
     }
@@ -45,8 +46,11 @@ public class StaffService implements IServicePrototype<StaffWithoutPasswordDTO> 
     }
 
     @Override
-    public StaffWithoutPasswordDTO create(StaffWithoutPasswordDTO obj) {
-        return null;
+    public StaffWithoutPasswordDTO create(Staff staff) {
+
+        Staff newStaff = staffRepository.save(staff);
+
+        return StaffMapper.toStaffWithoutPasswordDTO(newStaff);
     }
 
     @Override

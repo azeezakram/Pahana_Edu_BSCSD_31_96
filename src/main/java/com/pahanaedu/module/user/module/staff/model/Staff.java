@@ -23,6 +23,12 @@ public class Staff extends User {
     public Staff() {
     }
 
+    public Staff(String name, String username, String password) {
+        super(name);
+        this.username = username;
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
     }

@@ -2,12 +2,12 @@ package com.pahanaedu.common.interfaces;
 
 import java.util.List;
 
-public interface IServicePrototype<T> {
+public interface IServicePrototype<T, R> {
 
-    T findById(Long id);
-    List<T> findAll();
-    T create(T obj);
-    T update(T obj);
+    R findById(Long id);
+    List<R> findAll();
+    R create(T obj);
+    R update(R obj);
     boolean delete(int id);
 
 }
