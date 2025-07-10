@@ -7,7 +7,6 @@ import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.staff.model.Staff;
 
 import java.sql.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +158,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
                 updateUserStmt.setString(1, staff.getName());
                 updateUserStmt.setString(2, staff.getRole());
                 updateUserStmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-                updateUserStmt.setInt(4, staff.getId().intValue());
+                updateUserStmt.setLong(4, staff.getId());
                 result = updateUserStmt.executeUpdate();
             }
 

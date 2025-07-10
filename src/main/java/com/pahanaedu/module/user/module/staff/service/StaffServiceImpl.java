@@ -42,6 +42,7 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
         Staff staff = staffRepository.findByUsername(username);
 
         return Objects.nonNull(staff) ? StaffMapper.toStaffWithoutPasswordDTO(staff) : null;
+
     }
 
     @Override
@@ -53,8 +54,12 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
     }
 
     @Override
-    public StaffWithoutPasswordDTO update(StaffWithoutPasswordDTO obj) {
-        return null;
+    public StaffWithoutPasswordDTO update(Staff staff) {
+
+        Staff updatedStaff = staffRepository.update(staff);
+
+        return StaffMapper.toStaffWithoutPasswordDTO(updatedStaff);
+
     }
 
     @Override

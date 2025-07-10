@@ -31,7 +31,6 @@ public class StaffServlet extends HttpServlet {
 
             if (staffs != null) {
                 JsonUtil.sendJson(res, staffs, HttpServletResponse.SC_FOUND);
-                System.out.println("Timestamp: " + LocalDateTime.now());
                 return;
             }
 
@@ -73,18 +72,43 @@ public class StaffServlet extends HttpServlet {
                 StaffWithoutPasswordDTO createdStaff = staffService.create(staff);
 
                 if (createdStaff != null) {
+                    JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
+                    return;
+                }
+
+                JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    protected void doPut(HttpServletRequest req, HttpServletResponse res) {
+
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        try {
+
+            if (pathInfo == null || pathInfo.equals("/")) {
+
+                Staff staff = JsonUtil.extract(req, Staff.class);
+
+                StaffWithoutPasswordDTO createdStaff = staffService.update(staff);
+
+                if (createdStaff != null) {
                     System.out.println(createdStaff);
                     JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Staffs not found\"}", HttpServletResponse.SC_NOT_FOUND);
+                JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
             }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
-//            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
 
     }
 
