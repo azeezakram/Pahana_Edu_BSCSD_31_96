@@ -7,6 +7,7 @@ import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.staff.model.Staff;
 
 import java.sql.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,16 +88,16 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
                 """;
         System.out.println(staff);
         try (
-                Connection connection = db.getConnection();
+                Connection connection = db.getConnection()
         ) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(newUserSQL, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, staff.getName());
                 statement.setString(2, Role.STAFF.name());
-                LocalDateTime now = LocalDateTime.now();
                 statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+                System.out.println(statement);
                 result = statement.executeUpdate();
 
                 if (result > 0) {
@@ -126,7 +127,6 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
             newStaff = findById(generatedId);
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -151,7 +151,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
                 """;
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = db.getConnection()
         ) {
             connection.setAutoCommit(false);
 

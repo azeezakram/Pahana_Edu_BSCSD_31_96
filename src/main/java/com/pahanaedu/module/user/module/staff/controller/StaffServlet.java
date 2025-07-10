@@ -4,13 +4,13 @@ import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.module.user.module.staff.model.Staff;
 import com.pahanaedu.module.user.module.staff.service.StaffServiceImpl;
-import com.pahanaedu.module.user.module.staff.util.RequestBodyExtractor;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet("/api/staff/*")
@@ -31,6 +31,7 @@ public class StaffServlet extends HttpServlet {
 
             if (staffs != null) {
                 JsonUtil.sendJson(res, staffs, HttpServletResponse.SC_FOUND);
+                System.out.println("Timestamp: " + LocalDateTime.now());
                 return;
             }
 
