@@ -84,7 +84,7 @@ public class StaffServlet extends HttpServlet {
 
     }
 
-    protected void doPut(HttpServletRequest req, HttpServletResponse res) {
+    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
@@ -98,7 +98,6 @@ public class StaffServlet extends HttpServlet {
                 StaffWithoutPasswordDTO createdStaff = staffService.update(staff);
 
                 if (createdStaff != null) {
-                    System.out.println(createdStaff);
                     JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
                     return;
                 }
@@ -107,10 +106,7 @@ public class StaffServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
     }
-
-
 }

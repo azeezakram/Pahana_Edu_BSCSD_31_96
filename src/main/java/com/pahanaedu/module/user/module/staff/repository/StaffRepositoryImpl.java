@@ -5,6 +5,7 @@ import com.pahanaedu.config.DbConfig;
 import com.pahanaedu.module.user.enums.Role;
 import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.staff.model.Staff;
+import com.pahanaedu.module.user.module.staff.util.StaffUtils;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -60,7 +61,6 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
             while (result.next()) {
                 staffs.add(getStaffByResultSet(result));
             }
-            staffs.forEach(System.out::println);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -96,7 +96,6 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
                 statement.setString(2, Role.STAFF.name());
                 statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
-                System.out.println(statement);
                 result = statement.executeUpdate();
 
                 if (result > 0) {
@@ -116,7 +115,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
             try (PreparedStatement statement = connection.prepareStatement(newStaffSQL)) {
                 statement.setLong(1, generatedId);
                 statement.setString(2, staff.getUsername());
-                statement.setString(3, staff.getPassword());
+                statement.setString(3, StaffUtils.hashPassword(staff.getPassword()));
                 statement.setBoolean(4, true);
                 statement.executeUpdate();
             }
@@ -145,7 +144,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
 
         String updateStaffSQL = """
                     UPDATE staff
-                    SET username = ?, is_active = ?
+                    SET username = ?, password = ?, is_active = ?
                     WHERE id = ?
                 """;
 
@@ -156,7 +155,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
 
             try (PreparedStatement updateUserStmt = connection.prepareStatement(updateUserSQL)) {
                 updateUserStmt.setString(1, staff.getName());
-                updateUserStmt.setString(2, staff.getRole());
+                updateUserStmt.setString(2, Role.STAFF.name());
                 updateUserStmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 updateUserStmt.setLong(4, staff.getId());
                 result = updateUserStmt.executeUpdate();
@@ -165,8 +164,9 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
             if (result > 0) {
                 try (PreparedStatement updateStaffStmt = connection.prepareStatement(updateStaffSQL)) {
                     updateStaffStmt.setString(1, staff.getUsername());
-                    updateStaffStmt.setBoolean(2, staff.getIsActive());
-                    updateStaffStmt.setLong(3, staff.getId());
+                    updateStaffStmt.setString(2, StaffUtils.hashPassword(staff.getPassword()));
+                    updateStaffStmt.setBoolean(3, staff.getIsActive());
+                    updateStaffStmt.setLong(4, staff.getId());
                     updateStaffStmt.executeUpdate();
                 }
             }

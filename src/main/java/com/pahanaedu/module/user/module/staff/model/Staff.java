@@ -55,7 +55,7 @@ public class Staff extends User {
 
     @Override
     public String toString() {
-        return "Staff { " + getId() + " : " + getName() + " : " + getRole() + " + " + getUsername() + " ; "
+        return "Staff { " + getId() + " : " + getName() + " : " + getRole() + " : " + getUsername() + " : "
             + getPassword() + " : " + getIsActive() + " : " + getCreatedAt() + " : " + getUpdatedAt() + " }";
     }
 }
