@@ -8,6 +8,6 @@ public interface IServicePrototype<T, R> {
     List<R> findAll();
     R create(T obj);
     R update(T obj);
-    boolean delete(int id);
+    boolean delete(Long id);
 
 }

@@ -6,8 +6,8 @@ A modular Java-based Customer Relationship Management (CRM) system for education
 
 ## ⚙️ Tech Stack
 
-- **Language:** Java 17+
-- **Framework:** Jakarta EE (Jersey Servlet API)
+- **Language:** Java 21
+- **Framework:** Jakarta EE
 - **Database:** PostgreSQL
 - **Build Tool:** Maven
 - **JSON Mapper:** Jackson

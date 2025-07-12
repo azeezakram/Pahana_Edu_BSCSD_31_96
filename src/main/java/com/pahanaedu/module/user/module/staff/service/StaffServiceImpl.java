@@ -63,7 +63,10 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
     }
 
     @Override
-    public boolean delete(int id) {
-        return true;
+    public boolean delete(Long id) {
+
+        return staffRepository.delete(id);
+
     }
+
 }

@@ -109,4 +109,32 @@ public class StaffServlet extends HttpServlet {
             JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                JsonUtil.sendJson(res, "{\"error\" : \"Staff ID is required in URL\"}", HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            long id = Long.parseLong(pathInfo.substring(1));
+            boolean result = staffService.delete(id);
+
+            if (result) {
+                JsonUtil.sendJson(res, "{\"message\": \"Successfully deleted\"}", HttpServletResponse.SC_OK);
+            } else {
+                JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            }
+
+        } catch (NumberFormatException e) {
+            JsonUtil.sendJson(res, "{\"error\" : \"Invalid staff ID format\"}", HttpServletResponse.SC_BAD_REQUEST);
+        } catch (Exception e) {
+            JsonUtil.sendJson(res, "{\"error\" : \"Internal server error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

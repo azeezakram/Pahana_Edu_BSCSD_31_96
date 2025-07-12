@@ -183,9 +183,25 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
 
 
     @Override
-    public boolean delete(int id) {
-        return true;
+    public boolean delete(Long id) {
+        boolean isDeleted = false;
+        String query = "DELETE FROM users WHERE id = ?";
+
+        try (
+                Connection connection = db.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setLong(1, id);
+            int rowsAffected = statement.executeUpdate();
+            isDeleted = rowsAffected > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return isDeleted;
     }
+
 
     public Staff findByUsername(String username) {
 
