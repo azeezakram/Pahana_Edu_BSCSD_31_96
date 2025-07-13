@@ -184,7 +184,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
 
     @Override
     public boolean delete(Long id) {
-        boolean isDeleted = false;
+        boolean isDeleted;
         String query = "DELETE FROM users WHERE id = ?";
 
         try (
