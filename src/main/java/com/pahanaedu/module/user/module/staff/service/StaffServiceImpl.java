@@ -20,16 +20,16 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
 
     @Override
     public StaffWithoutPasswordDTO findById(Long id) {
-        Staff staff = staffRepository.findById(id);
 
+        Staff staff = staffRepository.findById(id);
         return staff != null ? StaffMapper.toStaffWithoutPasswordDTO(staff) : null;
     }
+
 
     @Override
     public List<StaffWithoutPasswordDTO> findAll() {
 
         List<Staff> staffs = staffRepository.findAll();
-
         return staffs != null ? staffs
                 .stream()
                 .map(StaffMapper::toStaffWithoutPasswordDTO)
@@ -40,7 +40,6 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
     public StaffWithoutPasswordDTO findByUsername(String username) {
 
         Staff staff = staffRepository.findByUsername(username);
-
         return Objects.nonNull(staff) ? StaffMapper.toStaffWithoutPasswordDTO(staff) : null;
 
     }
@@ -49,15 +48,14 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
     public StaffWithoutPasswordDTO create(Staff staff) {
 
         Staff newStaff = staffRepository.save(staff);
-
         return StaffMapper.toStaffWithoutPasswordDTO(newStaff);
+
     }
 
     @Override
     public StaffWithoutPasswordDTO update(Staff staff) {
 
         Staff updatedStaff = staffRepository.update(staff);
-
         return StaffMapper.toStaffWithoutPasswordDTO(updatedStaff);
 
     }

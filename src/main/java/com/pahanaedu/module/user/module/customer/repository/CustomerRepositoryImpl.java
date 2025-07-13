@@ -5,12 +5,16 @@ import com.pahanaedu.config.DbConfig;
 import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.util.CustomerUtills;
+import com.pahanaedu.module.user.module.staff.model.Staff;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
 public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Customer> {
 
@@ -45,7 +49,24 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
 
     @Override
     public List<Customer> findAll() {
-        return List.of();
+
+        List<Customer> customers = new ArrayList<>();
+        String query = "select * from customer c join users u on u.id = c.id";
+
+        try (
+                Connection connection = db.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                customers.add(CustomerUtills.getCustomerByResultSet(result));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return customers;
     }
 
     @Override

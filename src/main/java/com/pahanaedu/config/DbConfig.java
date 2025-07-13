@@ -9,19 +9,19 @@ public class DbConfig {
     private final static String url = "jdbc:postgresql://localhost:5432/pahana_edu_31_96";
     private final static String username = "postgres";
     private final static String password = "postgresdb";
-    private final Connection connection;
 
-    public DbConfig () {
+
+    public DbConfig () {}
+
+    public Connection getConnection() {
+
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(url, username, password);
+            return DriverManager.getConnection(url, username, password);
+
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Connection getConnection() {
-        return connection;
     }
 
 }

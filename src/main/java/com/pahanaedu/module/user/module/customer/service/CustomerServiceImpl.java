@@ -5,6 +5,8 @@ import com.pahanaedu.module.user.module.customer.dto.CustomerMinimalDTO;
 import com.pahanaedu.module.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.repository.CustomerRepositoryImpl;
+import com.pahanaedu.module.user.module.staff.mapper.StaffMapper;
+import com.pahanaedu.module.user.module.staff.model.Staff;
 
 import java.util.List;
 
@@ -26,7 +28,12 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
 
     @Override
     public List<CustomerMinimalDTO> findAll() {
-        return List.of();
+        List<Customer> customers = customerRepository.findAll();
+
+        return customers != null ? customers
+                .stream()
+                .map(CustomerMapper::toCustomerMinimalDTO)
+                .toList() : null;
     }
 
     @Override

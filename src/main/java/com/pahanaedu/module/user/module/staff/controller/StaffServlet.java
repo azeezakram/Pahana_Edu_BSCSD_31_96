@@ -33,7 +33,7 @@ public class StaffServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Staffs not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, "{\"error\" : \"Staffs not found\"}", HttpServletResponse.SC_NO_CONTENT);
             return;
         }
 
@@ -46,7 +46,7 @@ public class StaffServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
             JsonUtil.sendJson(res, "{\"error\" : \"Invalid staff id\"}", HttpServletResponse.SC_BAD_REQUEST);
@@ -68,6 +68,17 @@ public class StaffServlet extends HttpServlet {
 
                 Staff staff = JsonUtil.extract(req, Staff.class);
 
+                if (staff == null) {
+                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                StaffWithoutPasswordDTO existing = staffService.findByUsername(staff.getUsername());
+                if (existing != null) {
+                    JsonUtil.sendJson(res, "{\"error\" : \"Username already taken by another staff\"}", HttpServletResponse.SC_CONFLICT);
+                    return;
+                }
+
                 StaffWithoutPasswordDTO createdStaff = staffService.create(staff);
 
                 if (createdStaff != null) {
@@ -75,13 +86,13 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
+                JsonUtil.sendJson(res, "{\"error\" : \"Staff could not be created\"}", HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (Exception e) {
             JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
     }
+
 
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
@@ -93,15 +104,24 @@ public class StaffServlet extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/")) {
 
                 Staff staff = JsonUtil.extract(req, Staff.class);
+                if (staff == null) {
+                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                StaffWithoutPasswordDTO usernameCheck = staffService.findByUsername(staff.getUsername());
+                if (usernameCheck != null && !usernameCheck.id().equals(staff.getId())) {
+                    JsonUtil.sendJson(res, "{\"error\" : \"Username already taken by another staff\"}", HttpServletResponse.SC_CONFLICT);
+                    return;
+                }
 
                 StaffWithoutPasswordDTO createdStaff = staffService.update(staff);
-
                 if (createdStaff != null) {
                     JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
+                JsonUtil.sendJson(res, "{\"error\" : \"Staff could not be updated\"}", HttpServletResponse.SC_BAD_REQUEST);
             }
 
         } catch (Exception e) {
