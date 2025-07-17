@@ -2,6 +2,7 @@ package com.pahanaedu.module.user.module.staff.repository;
 
 import com.pahanaedu.common.interfaces.IRepositoryPrototype;
 import com.pahanaedu.config.DbConfig;
+import com.pahanaedu.config.DbConnectionFactory;
 import com.pahanaedu.module.user.enums.Role;
 import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.staff.model.Staff;
@@ -16,12 +17,6 @@ import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByR
 
 public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
 
-    private final DbConfig db;
-
-    public StaffRepositoryImpl() {
-        this.db = new DbConfig();
-    }
-
     @Override
     public Staff findById(Long id) {
 
@@ -29,7 +24,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
         String query = "select * from staff s join users u on s.id = u.id where s.id=?";
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = DbConnectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setInt(1, id.intValue());
@@ -54,7 +49,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
         String query = "select * from staff s join users u on u.id = s.id";
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = DbConnectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             ResultSet result = statement.executeQuery();
@@ -87,7 +82,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
                 """;
         System.out.println(staff);
         try (
-                Connection connection = db.getConnection()
+                Connection connection = DbConnectionFactory.getConnection()
         ) {
             connection.setAutoCommit(false);
 
@@ -149,7 +144,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
                 """;
 
         try (
-                Connection connection = db.getConnection()
+                Connection connection = DbConnectionFactory.getConnection()
         ) {
             connection.setAutoCommit(false);
 
@@ -188,7 +183,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
         String query = "DELETE FROM users WHERE id = ?";
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = DbConnectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
@@ -209,7 +204,7 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
         String query = "select * from staff s join users u on s.id = u.id where s.username=?";
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = DbConnectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, username);

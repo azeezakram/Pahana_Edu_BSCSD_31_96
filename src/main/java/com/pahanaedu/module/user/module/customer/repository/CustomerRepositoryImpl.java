@@ -2,27 +2,23 @@ package com.pahanaedu.module.user.module.customer.repository;
 
 import com.pahanaedu.common.interfaces.IRepositoryPrototype;
 import com.pahanaedu.config.DbConfig;
+import com.pahanaedu.config.DbConnectionFactory;
+import com.pahanaedu.module.user.enums.Role;
 import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.util.CustomerUtills;
 import com.pahanaedu.module.user.module.staff.model.Staff;
+import com.pahanaedu.module.user.module.staff.util.StaffUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.pahanaedu.module.user.module.customer.util.CustomerUtills.getCustomerByResultSet;
 import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
 public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Customer> {
-
-    private final DbConfig db;
-
-    public CustomerRepositoryImpl() {
-        this.db = new DbConfig();
-    }
 
     @Override
     public Customer findById(Long id) {
@@ -30,13 +26,13 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
         String query = "select * from customer c join users u on c.id = u.id where c.id=?";
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = DbConnectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setInt(1, id.intValue());
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-                customer = CustomerUtills.getCustomerByResultSet(result);
+                customer = getCustomerByResultSet(result);
             }
             System.out.println(customer);
 
@@ -54,12 +50,12 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
         String query = "select * from customer c join users u on u.id = c.id";
 
         try (
-                Connection connection = db.getConnection();
+                Connection connection = DbConnectionFactory.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                customers.add(CustomerUtills.getCustomerByResultSet(result));
+                customers.add(getCustomerByResultSet(result));
             }
 
         } catch (SQLException e) {
@@ -70,12 +66,100 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
     }
 
     @Override
-    public Customer save(Customer obj) {
+    public Customer save(Customer customer) {
+
+        int result;
+        long generatedId = 0L;
+        Customer newStaff;
+
+        String newUserSQL = """
+                    insert into users(name, role, created_at, updated_at)
+                    values (?, ?, ?, ?)
+                """;
+
+        String newStaffSQL = """
+                    insert into customer(id, account_number, address, phone_number)
+                    values (?, ?, ?, ?)
+                """;
+        System.out.println(customer);
+        try (
+                Connection connection = DbConnectionFactory.getConnection()
+        ) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement statement = connection.prepareStatement(newUserSQL, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setString(1, customer.getName());
+                statement.setString(2, Role.CUSTOMER.name());
+                statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+                statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+                result = statement.executeUpdate();
+
+                if (result > 0) {
+                    try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            generatedId = generatedKeys.getLong("id");
+                        }
+                    }
+                } else {
+                    connection.rollback();
+                    throw new SQLException("Creating customer failed, no rows affected.");
+                }
+
+            }
+            if (customer.getAccountNumber() == null || customer.getAccountNumber().isBlank()) {
+                customer.setAccountNumber("ph/edu/c/".concat(String.valueOf(generatedId)));
+                System.out.println(customer.getAccountNumber());
+            }
+
+            try (PreparedStatement statement = connection.prepareStatement(newStaffSQL)) {
+                statement.setLong(1, generatedId);
+                statement.setString(2, customer.getAccountNumber());
+                statement.setString(3, customer.getAddress());
+                statement.setString(4, customer.getPhoneNumber());
+                statement.executeUpdate();
+            }
+
+            connection.commit();
+
+            newStaff = findById(generatedId);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return newStaff;
+    }
+
+    @Override
+    public Customer update(Customer obj) {
         return null;
     }
 
     @Override
     public boolean delete(Long id) {
         return false;
+    }
+
+    public Customer findByAccountNumber(String accountNumber) {
+
+        Customer customer = null;
+        String query = "select * from customer c join users u on c.id = u.id where c.account_number = ?";
+
+        try (
+                Connection connection = DbConnectionFactory.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setString(1, accountNumber);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                customer = getCustomerByResultSet(result);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return customer;
+
     }
 }

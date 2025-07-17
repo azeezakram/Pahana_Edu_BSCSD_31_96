@@ -7,6 +7,7 @@ public interface IRepositoryPrototype<T, R extends T> {
     R findById(Long id);
     List<R> findAll();
     R save(R obj);
+    R update(R obj);
     boolean delete(Long id);
 
 }

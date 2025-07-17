@@ -23,6 +23,7 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
 
         Staff staff = staffRepository.findById(id);
         return staff != null ? StaffMapper.toStaffWithoutPasswordDTO(staff) : null;
+
     }
 
 

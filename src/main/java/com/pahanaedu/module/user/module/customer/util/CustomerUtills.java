@@ -1,10 +1,7 @@
 package com.pahanaedu.module.user.module.customer.util;
 
 import com.pahanaedu.module.user.module.customer.model.Customer;
-import com.pahanaedu.module.user.module.staff.model.Staff;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

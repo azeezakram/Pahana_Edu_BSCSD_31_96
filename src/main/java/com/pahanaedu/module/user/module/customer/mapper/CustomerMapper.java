@@ -8,11 +8,11 @@ import com.pahanaedu.module.user.module.customer.model.Customer;
 public class CustomerMapper {
 
     public static CustomerCreationDTO toCustomerCreationDTO(Customer customer) {
-        return new CustomerCreationDTO(customer.getName(), customer.getAccountNumber(), customer.getAddress(), customer.getPhoneNumber());
+        return new CustomerCreationDTO(customer.getName(), customer.getAddress(), customer.getPhoneNumber());
     }
 
     public static Customer toCustomer(CustomerCreationDTO customerCreationDTO) {
-        return new Customer(customerCreationDTO.name(), customerCreationDTO.accountNumber(), customerCreationDTO.address(), customerCreationDTO.phoneNumber());
+        return new Customer(customerCreationDTO.name(), customerCreationDTO.address(), customerCreationDTO.phoneNumber());
     }
 
     public static CustomerMinimalDTO toCustomerMinimalDTO(Customer customer) {

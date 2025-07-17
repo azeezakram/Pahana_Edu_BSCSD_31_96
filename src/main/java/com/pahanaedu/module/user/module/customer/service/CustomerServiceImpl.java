@@ -5,10 +5,10 @@ import com.pahanaedu.module.user.module.customer.dto.CustomerMinimalDTO;
 import com.pahanaedu.module.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.repository.CustomerRepositoryImpl;
-import com.pahanaedu.module.user.module.staff.mapper.StaffMapper;
-import com.pahanaedu.module.user.module.staff.model.Staff;
+import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CustomerServiceImpl implements IServicePrototype<Customer, CustomerMinimalDTO> {
 
@@ -38,7 +38,8 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
 
     @Override
     public CustomerMinimalDTO create(Customer customer) {
-        return null;
+        Customer newCustomer = customerRepository.save(customer);
+        return CustomerMapper.toCustomerMinimalDTO(newCustomer);
     }
 
     @Override
@@ -52,4 +53,8 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
     }
 
 
+    public CustomerMinimalDTO findByAccountNumber(String accountNumber) {
+        Customer customer = customerRepository.findByAccountNumber(accountNumber);
+        return Objects.nonNull(customer) ? CustomerMapper.toCustomerMinimalDTO(customer) : null;
+    }
 }
