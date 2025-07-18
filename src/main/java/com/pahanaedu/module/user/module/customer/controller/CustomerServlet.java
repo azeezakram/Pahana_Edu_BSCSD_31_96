@@ -51,7 +51,17 @@ public class CustomerServlet extends HttpServlet {
             JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
 
         } catch (NumberFormatException e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Invalid customer id\"}", HttpServletResponse.SC_BAD_REQUEST);
+
+            String accountNumber = pathInfo.substring(1);
+            CustomerMinimalDTO customer = customerService.findByAccountNumber(accountNumber);
+
+            if (customer != null) {
+                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_FOUND);
+                return;
+            }
+
+            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+
         } catch (Exception e) {
             JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }

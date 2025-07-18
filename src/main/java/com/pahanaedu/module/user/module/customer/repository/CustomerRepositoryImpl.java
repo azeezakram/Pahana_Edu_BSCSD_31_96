@@ -107,7 +107,7 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
 
             }
             if (customer.getAccountNumber() == null || customer.getAccountNumber().isBlank()) {
-                customer.setAccountNumber("ph/edu/c/".concat(String.valueOf(generatedId)));
+                customer.setAccountNumber("ph-edu-c-".concat(String.valueOf(generatedId)));
                 System.out.println(customer.getAccountNumber());
             }
 
