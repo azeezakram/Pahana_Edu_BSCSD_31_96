@@ -102,10 +102,12 @@ public class CustomerServlet extends HttpServlet {
     }
 
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
         try {
+
             if (pathInfo == null || pathInfo.equals("/")) {
 
                 Customer customer = JsonUtil.extract(req, Customer.class);
@@ -130,9 +132,52 @@ public class CustomerServlet extends HttpServlet {
 
                 JsonUtil.sendJson(res, "{\"error\" : \"Customer could not be updated\"}", HttpServletResponse.SC_BAD_REQUEST);
             }
+
         } catch (Exception e) {
             JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        if (pathInfo == null || pathInfo.equals("/")) {
+
+            JsonUtil.sendJson(res, "{\"error\" : \"Customer id or account number required\"}", HttpServletResponse.SC_NOT_FOUND);
+            return;
+
+        }
+
+        try {
+
+            Long id = Long.parseLong(pathInfo.substring(1));
+            boolean isDeleted = customerService.delete(id);
+
+            if (isDeleted) {
+                JsonUtil.sendJson(res, isDeleted, HttpServletResponse.SC_OK);
+                return;
+            }
+
+            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+
+        } catch (NumberFormatException e) {
+
+            String accountNumber = pathInfo.substring(1);
+            boolean isDeleted = customerService.deleteByAccountNumber(accountNumber);
+
+            if (isDeleted) {
+                JsonUtil.sendJson(res, isDeleted, HttpServletResponse.SC_FOUND);
+                return;
+            }
+
+            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+
+        } catch (Exception e) {
+            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 

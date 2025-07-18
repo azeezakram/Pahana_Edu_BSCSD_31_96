@@ -50,12 +50,16 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        return customerRepository.delete(id);
     }
 
 
     public CustomerMinimalDTO findByAccountNumber(String accountNumber) {
         Customer customer = customerRepository.findByAccountNumber(accountNumber);
         return Objects.nonNull(customer) ? CustomerMapper.toCustomerMinimalDTO(customer) : null;
+    }
+
+    public boolean deleteByAccountNumber(String accountNumber) {
+        return customerRepository.deleteByAccountNumber(accountNumber);
     }
 }

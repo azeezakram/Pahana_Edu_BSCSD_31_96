@@ -186,7 +186,26 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
 
     @Override
     public boolean delete(Long id) {
-        return false;
+
+        boolean isDeleted = false;
+        String query = "delete from users where id = ?";
+
+        try (
+                Connection connection = DbConnectionFactory.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setLong(1, id);
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                isDeleted = true;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return isDeleted;
+
     }
 
     public Customer findByAccountNumber(String accountNumber) {
@@ -209,6 +228,29 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
         }
 
         return customer;
+
+    }
+
+    public boolean deleteByAccountNumber(String accountNumber) {
+
+        boolean isDeleted = false;
+        String query = "delete from users u using customer c where u.id = c.id and c.account_number = ?";
+
+        try (
+                Connection connection = DbConnectionFactory.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setString(1, accountNumber);
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                isDeleted = true;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return isDeleted;
 
     }
 }
