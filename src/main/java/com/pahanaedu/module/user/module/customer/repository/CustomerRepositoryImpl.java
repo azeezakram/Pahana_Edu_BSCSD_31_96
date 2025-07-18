@@ -1,14 +1,10 @@
 package com.pahanaedu.module.user.module.customer.repository;
 
 import com.pahanaedu.common.interfaces.IRepositoryPrototype;
-import com.pahanaedu.config.DbConfig;
 import com.pahanaedu.config.DbConnectionFactory;
 import com.pahanaedu.module.user.enums.Role;
 import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.customer.model.Customer;
-import com.pahanaedu.module.user.module.customer.util.CustomerUtills;
-import com.pahanaedu.module.user.module.staff.model.Staff;
-import com.pahanaedu.module.user.module.staff.util.StaffUtils;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -16,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.pahanaedu.module.user.module.customer.util.CustomerUtills.getCustomerByResultSet;
-import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
 public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Customer> {
 
@@ -131,8 +126,62 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Custom
     }
 
     @Override
-    public Customer update(Customer obj) {
-        return null;
+    public Customer update(Customer customer) {
+        int result;
+        Customer updatedCustomer;
+
+        String updateUserSql = """
+                    update users
+                    set name = ?, role = ?, updated_at = ? 
+                    where id = ?
+                """;
+
+        String updateCustomerSql = """
+                    update customer
+                    set account_number = ?, address = ?, phone_number = ?
+                    where id = ?
+                """;
+        System.out.println(customer);
+        try (
+                Connection connection = DbConnectionFactory.getConnection()
+        ) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement statement = connection.prepareStatement(updateUserSql)) {
+                statement.setString(1, customer.getName());
+                statement.setString(2, Role.CUSTOMER.name());
+                statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+                statement.setLong(4, customer.getId());
+                result = statement.executeUpdate();
+
+                if (result < 0) {
+                    connection.rollback();
+                    throw new SQLException("Creating customer failed, no rows affected.");
+                }
+
+            }
+            if (customer.getAccountNumber() == null || customer.getAccountNumber().isBlank()) {
+                customer.setAccountNumber("ph-edu-c-".concat(String.valueOf(customer.getId())));
+                System.out.println(customer.getAccountNumber());
+            }
+
+            try (PreparedStatement statement = connection.prepareStatement(updateCustomerSql)) {
+                statement.setString(1, customer.getAccountNumber());
+                statement.setString(2, customer.getAddress());
+                statement.setString(3, customer.getPhoneNumber());
+                statement.setLong(4, customer.getId());
+                statement.executeUpdate();
+            }
+
+            connection.commit();
+
+            updatedCustomer = findById(customer.getId());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return updatedCustomer;
     }
 
     @Override

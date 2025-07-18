@@ -4,8 +4,6 @@ import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.module.user.module.customer.dto.CustomerMinimalDTO;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.service.CustomerServiceImpl;
-import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
-import com.pahanaedu.module.user.module.staff.model.Staff;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -97,6 +95,40 @@ public class CustomerServlet extends HttpServlet {
                 }
 
                 JsonUtil.sendJson(res, "{\"error\" : \"Customer could not be created\"}", HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+
+                Customer customer = JsonUtil.extract(req, Customer.class);
+
+                if (customer == null) {
+                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                CustomerMinimalDTO existing = customerService.findByAccountNumber(customer.getAccountNumber());
+                if (existing != null && !existing.id().equals(customer.getId())) {
+                    JsonUtil.sendJson(res, "{\"error\" : \"Account number already taken by another customer\"}", HttpServletResponse.SC_CONFLICT);
+                    return;
+                }
+
+                CustomerMinimalDTO updatedCustomer = customerService.update(customer);
+
+                if (updatedCustomer != null) {
+                    JsonUtil.sendJson(res, updatedCustomer, HttpServletResponse.SC_OK);
+                    return;
+                }
+
+                JsonUtil.sendJson(res, "{\"error\" : \"Customer could not be updated\"}", HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (Exception e) {
             JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

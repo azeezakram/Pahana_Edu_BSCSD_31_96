@@ -44,7 +44,8 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
 
     @Override
     public CustomerMinimalDTO update(Customer customer) {
-        return null;
+        Customer newCustomer = customerRepository.update(customer);
+        return CustomerMapper.toCustomerMinimalDTO(newCustomer);
     }
 
     @Override
