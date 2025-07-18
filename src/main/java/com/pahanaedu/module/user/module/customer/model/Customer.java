@@ -33,6 +33,7 @@ public class Customer extends User {
 
         super(name);
         this.address = address;
+        this.accountNumber = "";
         this.phoneNumber = phoneNumber;
 
     }
