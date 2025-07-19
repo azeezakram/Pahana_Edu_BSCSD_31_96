@@ -5,7 +5,7 @@ import com.pahanaedu.module.user.module.customer.model.Customer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CustomerUtills {
+public class CustomerUtils {
 
     public static Customer getCustomerByResultSet(ResultSet result) throws SQLException {
         return new Customer(

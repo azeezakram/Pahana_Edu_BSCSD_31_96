@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.pahanaedu.module.user.module.customer.util.CustomerUtills.getCustomerByResultSet;
+import static com.pahanaedu.module.user.module.customer.util.CustomerUtils.getCustomerByResultSet;
 
 public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Customer> {
 
