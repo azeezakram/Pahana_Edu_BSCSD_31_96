@@ -30,7 +30,7 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
     public List<CustomerMinimalDTO> findAll() {
         List<Customer> customers = customerRepository.findAll();
 
-        return customers != null ? customers
+        return !customers.isEmpty() ? customers
                 .stream()
                 .map(CustomerMapper::toCustomerMinimalDTO)
                 .toList() : null;

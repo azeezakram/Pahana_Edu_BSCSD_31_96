@@ -2,7 +2,7 @@ package com.pahanaedu.common.interfaces;
 
 import java.util.List;
 
-public interface IRepositoryPrototype<T, R extends T> {
+public interface IRepositoryPrototype<R> {
 
     R findById(Long id);
     List<R> findAll();

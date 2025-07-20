@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/api/staff/*")
 public class StaffServlet extends HttpServlet {
@@ -26,14 +27,19 @@ public class StaffServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            List<StaffWithoutPasswordDTO> staffs = staffService.findAll();
+            try {
+                List<StaffWithoutPasswordDTO> staffs = staffService.findAll();
 
-            if (staffs != null) {
-                JsonUtil.sendJson(res, staffs, HttpServletResponse.SC_FOUND);
+                if (staffs != null) {
+                    JsonUtil.sendJson(res, staffs, HttpServletResponse.SC_OK);
+                    return;
+                }
+            } catch (Exception e) {
+                JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Staffs not found\"}", HttpServletResponse.SC_NO_CONTENT);
+            JsonUtil.sendJson(res, Map.of("error", "Staffs not found"), HttpServletResponse.SC_NO_CONTENT);
             return;
         }
 
@@ -42,17 +48,16 @@ public class StaffServlet extends HttpServlet {
             StaffWithoutPasswordDTO staff = staffService.findById(id);
 
             if (staff != null) {
-                JsonUtil.sendJson(res, staff, HttpServletResponse.SC_FOUND);
+                JsonUtil.sendJson(res, staff, HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NO_CONTENT);
+            JsonUtil.sendJson(res, Map.of("error", "Staffs not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Invalid staff id\"}", HttpServletResponse.SC_BAD_REQUEST);
+            JsonUtil.sendJson(res, Map.of("error", "Invalid staff id"), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            throw new RuntimeException(e);
+            JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -69,13 +74,13 @@ public class StaffServlet extends HttpServlet {
                 Staff staff = JsonUtil.extract(req, Staff.class);
 
                 if (staff == null) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
+                    JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
                 StaffWithoutPasswordDTO existing = staffService.findByUsername(staff.getUsername());
                 if (existing != null) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Username already taken by another staff\"}", HttpServletResponse.SC_CONFLICT);
+                    JsonUtil.sendJson(res, Map.of("error", "Username has already taken by another staff"), HttpServletResponse.SC_CONFLICT);
                     return;
                 }
 
@@ -86,10 +91,10 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Staff could not be created\"}", HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Staff could not be created"), HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -105,13 +110,13 @@ public class StaffServlet extends HttpServlet {
 
                 Staff staff = JsonUtil.extract(req, Staff.class);
                 if (staff == null) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
+                    JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
                 StaffWithoutPasswordDTO usernameCheck = staffService.findByUsername(staff.getUsername());
                 if (usernameCheck != null && !usernameCheck.id().equals(staff.getId())) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Username already taken by another staff\"}", HttpServletResponse.SC_CONFLICT);
+                    JsonUtil.sendJson(res, Map.of("error", "Username has already taken by another staff"), HttpServletResponse.SC_CONFLICT);
                     return;
                 }
 
@@ -121,11 +126,11 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Staff could not be updated\"}", HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error",  "Staff could not be updated"), HttpServletResponse.SC_BAD_REQUEST);
             }
 
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -136,7 +141,7 @@ public class StaffServlet extends HttpServlet {
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                JsonUtil.sendJson(res, "{\"error\" : \"Staff ID is required in URL\"}", HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Staff ID is required in URL"), HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
@@ -144,15 +149,15 @@ public class StaffServlet extends HttpServlet {
             boolean result = staffService.delete(id);
 
             if (result) {
-                JsonUtil.sendJson(res, "{\"message\": \"Successfully deleted\"}", HttpServletResponse.SC_OK);
+                JsonUtil.sendJson(res, Map.of("message","Successfully deleted"), HttpServletResponse.SC_OK);
             } else {
-                JsonUtil.sendJson(res, "{\"error\" : \"Staff not found\"}", HttpServletResponse.SC_NOT_FOUND);
+                JsonUtil.sendJson(res, Map.of("error", "Staff not found"), HttpServletResponse.SC_NOT_FOUND);
             }
 
         } catch (NumberFormatException e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Invalid staff ID format\"}", HttpServletResponse.SC_BAD_REQUEST);
+            JsonUtil.sendJson(res, Map.of("error", "Invalid staff ID "), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal server error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 

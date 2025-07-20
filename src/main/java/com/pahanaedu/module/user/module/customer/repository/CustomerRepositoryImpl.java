@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.pahanaedu.module.user.module.customer.util.CustomerUtils.getCustomerByResultSet;
 
-public class CustomerRepositoryImpl implements IRepositoryPrototype<User, Customer> {
+public class CustomerRepositoryImpl implements IRepositoryPrototype<Customer> {
 
     @Override
     public Customer findById(Long id) {

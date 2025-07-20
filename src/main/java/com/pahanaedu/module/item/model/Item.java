@@ -9,18 +9,20 @@ public class Item {
     private Long id;
     private String itemName;
     private String description;
+    private String brand;
     private Category category;
     private Integer price;
     private Integer stock;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Item(Long id, String itemName, String description, Category category,
+    public Item(Long id, String itemName, String description, String brand, Category category,
                 Integer price, Integer stock, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
         this.id = id;
         this.itemName = itemName;
         this.description = description;
+        this.brand = brand;
         this.category = category;
         this.price = price;
         this.stock = stock;
@@ -54,6 +56,14 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public Category getCategory() {

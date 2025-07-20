@@ -15,7 +15,7 @@ import java.util.List;
 
 import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
-public class StaffRepositoryImpl implements IRepositoryPrototype<User, Staff> {
+public class StaffRepositoryImpl implements IRepositoryPrototype<Staff> {
 
     @Override
     public Staff findById(Long id) {

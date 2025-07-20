@@ -156,7 +156,7 @@ public class CustomerServlet extends HttpServlet {
             boolean isDeleted = customerService.delete(id);
 
             if (isDeleted) {
-                JsonUtil.sendJson(res, isDeleted, HttpServletResponse.SC_OK);
+                JsonUtil.sendJson(res, true, HttpServletResponse.SC_OK);
                 return;
             }
 
@@ -168,7 +168,7 @@ public class CustomerServlet extends HttpServlet {
             boolean isDeleted = customerService.deleteByAccountNumber(accountNumber);
 
             if (isDeleted) {
-                JsonUtil.sendJson(res, isDeleted, HttpServletResponse.SC_FOUND);
+                JsonUtil.sendJson(res, true, HttpServletResponse.SC_FOUND);
                 return;
             }
 
