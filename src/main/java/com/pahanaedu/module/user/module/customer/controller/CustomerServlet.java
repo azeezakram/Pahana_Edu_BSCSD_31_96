@@ -2,6 +2,7 @@ package com.pahanaedu.module.user.module.customer.controller;
 
 import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.module.user.module.customer.dto.CustomerMinimalDTO;
+import com.pahanaedu.module.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.service.CustomerServiceImpl;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/api/customer/*")
 public class CustomerServlet extends HttpServlet {
@@ -20,7 +22,6 @@ public class CustomerServlet extends HttpServlet {
         this.customerService = new CustomerServiceImpl();
     }
 
-
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
@@ -29,11 +30,11 @@ public class CustomerServlet extends HttpServlet {
             List<CustomerMinimalDTO> customers = customerService.findAll();
 
             if (customers != null) {
-                JsonUtil.sendJson(res, customers, HttpServletResponse.SC_FOUND);
+                JsonUtil.sendJson(res, customers, HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Customers not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customers not found"), HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
@@ -42,11 +43,11 @@ public class CustomerServlet extends HttpServlet {
             CustomerMinimalDTO customer = customerService.findById(id);
 
             if (customer != null) {
-                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_FOUND);
+                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
 
         } catch (NumberFormatException e) {
 
@@ -54,20 +55,18 @@ public class CustomerServlet extends HttpServlet {
             CustomerMinimalDTO customer = customerService.findByAccountNumber(accountNumber);
 
             if (customer != null) {
-                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_FOUND);
+                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
 
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
@@ -77,13 +76,7 @@ public class CustomerServlet extends HttpServlet {
                 Customer customer = JsonUtil.extract(req, Customer.class);
 
                 if (customer == null) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
-                    return;
-                }
-
-                CustomerMinimalDTO existing = customerService.findByAccountNumber(customer.getAccountNumber());
-                if (existing != null) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Account number already taken by another customer\"}", HttpServletResponse.SC_CONFLICT);
+                    JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
@@ -94,10 +87,12 @@ public class CustomerServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Customer could not be created\"}", HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Customer could not be created"), HttpServletResponse.SC_BAD_REQUEST);
             }
+        } catch (CustomerAccountNumberAlreadyExistException e) {
+            JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -107,19 +102,12 @@ public class CustomerServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         try {
-
             if (pathInfo == null || pathInfo.equals("/")) {
 
                 Customer customer = JsonUtil.extract(req, Customer.class);
 
                 if (customer == null) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Request body is empty\"}", HttpServletResponse.SC_BAD_REQUEST);
-                    return;
-                }
-
-                CustomerMinimalDTO existing = customerService.findByAccountNumber(customer.getAccountNumber());
-                if (existing != null && !existing.id().equals(customer.getId())) {
-                    JsonUtil.sendJson(res, "{\"error\" : \"Account number already taken by another customer\"}", HttpServletResponse.SC_CONFLICT);
+                    JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
@@ -130,11 +118,13 @@ public class CustomerServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, "{\"error\" : \"Customer could not be updated\"}", HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Customer you are trying update not found"), HttpServletResponse.SC_BAD_REQUEST);
             }
-
+        } catch (CustomerAccountNumberAlreadyExistException e) {
+            JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -144,23 +134,20 @@ public class CustomerServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-
-            JsonUtil.sendJson(res, "{\"error\" : \"Customer id or account number required\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer id or account number required"), HttpServletResponse.SC_NOT_FOUND);
             return;
-
         }
 
         try {
-
             Long id = Long.parseLong(pathInfo.substring(1));
             boolean isDeleted = customerService.delete(id);
 
             if (isDeleted) {
-                JsonUtil.sendJson(res, true, HttpServletResponse.SC_OK);
+                JsonUtil.sendJson(res, Map.of("success", true), HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
 
         } catch (NumberFormatException e) {
 
@@ -168,17 +155,14 @@ public class CustomerServlet extends HttpServlet {
             boolean isDeleted = customerService.deleteByAccountNumber(accountNumber);
 
             if (isDeleted) {
-                JsonUtil.sendJson(res, true, HttpServletResponse.SC_FOUND);
+                JsonUtil.sendJson(res, Map.of("success", true), HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, "{\"error\" : \"Customer not found\"}", HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
 
         } catch (Exception e) {
-            JsonUtil.sendJson(res, "{\"error\" : \"Internal error\"}", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
     }
-
-
 }

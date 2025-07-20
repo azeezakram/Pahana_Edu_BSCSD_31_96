@@ -65,7 +65,6 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<Customer> {
 
         int result;
         long generatedId = 0L;
-        Customer newStaff;
 
         String newUserSQL = """
                     insert into users(name, role, created_at, updated_at)
@@ -115,20 +114,18 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<Customer> {
             }
 
             connection.commit();
-
-            newStaff = findById(generatedId);
+            customer.setId(generatedId);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return newStaff;
+        return customer;
     }
 
     @Override
     public Customer update(Customer customer) {
         int result;
-        Customer updatedCustomer;
 
         String updateUserSql = """
                     update users
@@ -160,10 +157,6 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<Customer> {
                 }
 
             }
-            if (customer.getAccountNumber() == null || customer.getAccountNumber().isBlank()) {
-                customer.setAccountNumber("ph-edu-c-".concat(String.valueOf(customer.getId())));
-                System.out.println(customer.getAccountNumber());
-            }
 
             try (PreparedStatement statement = connection.prepareStatement(updateCustomerSql)) {
                 statement.setString(1, customer.getAccountNumber());
@@ -175,13 +168,11 @@ public class CustomerRepositoryImpl implements IRepositoryPrototype<Customer> {
 
             connection.commit();
 
-            updatedCustomer = findById(customer.getId());
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return updatedCustomer;
+        return customer;
     }
 
     @Override

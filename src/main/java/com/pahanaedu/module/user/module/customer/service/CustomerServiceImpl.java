@@ -1,13 +1,17 @@
 package com.pahanaedu.module.user.module.customer.service;
 
 import com.pahanaedu.common.interfaces.IServicePrototype;
+import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.module.user.module.customer.dto.CustomerMinimalDTO;
+import com.pahanaedu.module.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.module.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.repository.CustomerRepositoryImpl;
 import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class CustomerServiceImpl implements IServicePrototype<Customer, CustomerMinimalDTO> {
@@ -38,14 +42,31 @@ public class CustomerServiceImpl implements IServicePrototype<Customer, Customer
 
     @Override
     public CustomerMinimalDTO create(Customer customer) {
+
+        CustomerMinimalDTO existing = findByAccountNumber(customer.getAccountNumber());
+        if (existing != null) {
+            throw  new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
+        }
+
         Customer newCustomer = customerRepository.save(customer);
-        return CustomerMapper.toCustomerMinimalDTO(newCustomer);
+        return findById(newCustomer.getId());
     }
 
     @Override
     public CustomerMinimalDTO update(Customer customer) {
+
+        CustomerMinimalDTO existing = findByAccountNumber(customer.getAccountNumber());
+        if (existing != null && !existing.id().equals(customer.getId())) {
+            throw new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
+        }
+
+        if (customer.getAccountNumber() == null || customer.getAccountNumber().isBlank()) {
+            customer.setAccountNumber("ph-edu-c-".concat(String.valueOf(customer.getId())));
+        }
+
         Customer newCustomer = customerRepository.update(customer);
-        return CustomerMapper.toCustomerMinimalDTO(newCustomer);
+
+        return findById(newCustomer.getId());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.pahanaedu.module.user.module.staff.controller;
 
 import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
+import com.pahanaedu.module.user.module.staff.exception.StaffUsernameAlreadyExistException;
 import com.pahanaedu.module.user.module.staff.model.Staff;
 import com.pahanaedu.module.user.module.staff.service.StaffServiceImpl;
 import jakarta.servlet.annotation.WebServlet;
@@ -78,12 +79,6 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                StaffWithoutPasswordDTO existing = staffService.findByUsername(staff.getUsername());
-                if (existing != null) {
-                    JsonUtil.sendJson(res, Map.of("error", "Username has already taken by another staff"), HttpServletResponse.SC_CONFLICT);
-                    return;
-                }
-
                 StaffWithoutPasswordDTO createdStaff = staffService.create(staff);
 
                 if (createdStaff != null) {
@@ -93,6 +88,8 @@ public class StaffServlet extends HttpServlet {
 
                 JsonUtil.sendJson(res, Map.of("error", "Staff could not be created"), HttpServletResponse.SC_BAD_REQUEST);
             }
+        } catch (StaffUsernameAlreadyExistException e) {
+            JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -114,21 +111,17 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                StaffWithoutPasswordDTO usernameCheck = staffService.findByUsername(staff.getUsername());
-                if (usernameCheck != null && !usernameCheck.id().equals(staff.getId())) {
-                    JsonUtil.sendJson(res, Map.of("error", "Username has already taken by another staff"), HttpServletResponse.SC_CONFLICT);
-                    return;
-                }
-
                 StaffWithoutPasswordDTO createdStaff = staffService.update(staff);
                 if (createdStaff != null) {
                     JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
                     return;
                 }
 
-                JsonUtil.sendJson(res, Map.of("error",  "Staff could not be updated"), HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Staff could not be updated"), HttpServletResponse.SC_BAD_REQUEST);
             }
 
+        } catch (StaffUsernameAlreadyExistException e) {
+            JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
