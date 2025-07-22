@@ -1,7 +1,7 @@
 package com.pahanaedu.module.item.service;
 
-import com.pahanaedu.common.interfaces.IRepositoryPrototype;
-import com.pahanaedu.common.interfaces.IServicePrototype;
+import com.pahanaedu.common.interfaces.Repository;
+import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.module.item.dto.ItemMinimalDTO;
 import com.pahanaedu.module.item.mapper.ItemMapper;
 import com.pahanaedu.module.item.model.Item;
@@ -9,9 +9,9 @@ import com.pahanaedu.module.item.repository.ItemRepositoryImpl;
 
 import java.util.List;
 
-public class ItemServiceImpl implements IServicePrototype<Item, ItemMinimalDTO> {
+public class ItemServiceImpl implements Service<Item, ItemMinimalDTO> {
 
-    private final IRepositoryPrototype<Item> itemIRepository;
+    private final Repository<Item> itemIRepository;
 
     public ItemServiceImpl() {
         this.itemIRepository = new ItemRepositoryImpl();

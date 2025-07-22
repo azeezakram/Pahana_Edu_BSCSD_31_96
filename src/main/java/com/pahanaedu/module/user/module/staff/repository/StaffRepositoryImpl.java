@@ -1,10 +1,8 @@
 package com.pahanaedu.module.user.module.staff.repository;
 
-import com.pahanaedu.common.interfaces.IRepositoryPrototype;
-import com.pahanaedu.config.DbConfig;
+import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.config.DbConnectionFactory;
 import com.pahanaedu.module.user.enums.Role;
-import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.staff.model.Staff;
 import com.pahanaedu.module.user.module.staff.util.StaffUtils;
 
@@ -15,7 +13,7 @@ import java.util.List;
 
 import static com.pahanaedu.module.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
-public class StaffRepositoryImpl implements IRepositoryPrototype<Staff> {
+public class StaffRepositoryImpl implements Repository<Staff> {
 
     @Override
     public Staff findById(Long id) {
@@ -69,7 +67,6 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<Staff> {
         
         int result;
         long generatedId = 0L;
-        Staff newStaff;
 
         String newUserSQL = """
                     insert into users(name, role, created_at, updated_at)
@@ -117,13 +114,13 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<Staff> {
 
             connection.commit();
 
-            newStaff = findById(generatedId);
+            staff.setId(generatedId);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return newStaff;
+        return staff;
 
     }
 
@@ -165,14 +162,13 @@ public class StaffRepositoryImpl implements IRepositoryPrototype<Staff> {
                     updateStaffStmt.executeUpdate();
                 }
             }
-
             connection.commit();
-
-            return findById(staff.getId());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        return staff;
 
     }
 

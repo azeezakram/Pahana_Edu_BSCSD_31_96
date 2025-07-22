@@ -1,6 +1,6 @@
 package com.pahanaedu.module.item.repository;
 
-import com.pahanaedu.common.interfaces.IRepositoryPrototype;
+import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.config.DbConnectionFactory;
 import com.pahanaedu.module.item.model.Item;
 import com.pahanaedu.module.item.util.ItemUtils;
@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemRepositoryImpl implements IRepositoryPrototype<Item> {
+public class ItemRepositoryImpl implements Repository<Item> {
 
     @Override
     public Item findById(Long id) {

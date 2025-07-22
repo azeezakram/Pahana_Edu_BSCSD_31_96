@@ -1,9 +1,8 @@
 package com.pahanaedu.module.user.module.customer.repository;
 
-import com.pahanaedu.common.interfaces.IRepositoryPrototype;
+import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.config.DbConnectionFactory;
 import com.pahanaedu.module.user.enums.Role;
-import com.pahanaedu.module.user.model.User;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 
 import java.sql.*;
@@ -13,7 +12,7 @@ import java.util.List;
 
 import static com.pahanaedu.module.user.module.customer.util.CustomerUtils.getCustomerByResultSet;
 
-public class CustomerRepositoryImpl implements IRepositoryPrototype<Customer> {
+public class CustomerRepositoryImpl implements Repository<Customer> {
 
     @Override
     public Customer findById(Long id) {

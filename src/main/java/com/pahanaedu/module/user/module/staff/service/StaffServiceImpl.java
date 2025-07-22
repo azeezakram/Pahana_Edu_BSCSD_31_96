@@ -1,19 +1,16 @@
 package com.pahanaedu.module.user.module.staff.service;
 
-import com.pahanaedu.common.interfaces.IServicePrototype;
-import com.pahanaedu.common.utill.JsonUtil;
+import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.module.user.module.staff.exception.StaffUsernameAlreadyExistException;
 import com.pahanaedu.module.user.module.staff.mapper.StaffMapper;
 import com.pahanaedu.module.user.module.staff.model.Staff;
 import com.pahanaedu.module.user.module.staff.repository.StaffRepositoryImpl;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPasswordDTO> {
+public class StaffServiceImpl implements Service<Staff, StaffWithoutPasswordDTO> {
 
     private final StaffRepositoryImpl staffRepository;
 
@@ -58,7 +55,7 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
         }
 
         Staff newStaff = staffRepository.save(staff);
-        return StaffMapper.toStaffWithoutPasswordDTO(newStaff);
+        return findById(newStaff.getId());
 
     }
 
@@ -71,15 +68,13 @@ public class StaffServiceImpl implements IServicePrototype<Staff, StaffWithoutPa
         }
 
         Staff updatedStaff = staffRepository.update(staff);
-        return StaffMapper.toStaffWithoutPasswordDTO(updatedStaff);
+        return findById(updatedStaff.getId());
 
     }
 
     @Override
     public boolean delete(Long id) {
-
         return staffRepository.delete(id);
-
     }
 
 }

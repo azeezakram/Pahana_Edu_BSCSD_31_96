@@ -1,6 +1,6 @@
 package com.pahanaedu.module.item.controller;
 
-import com.pahanaedu.common.interfaces.IServicePrototype;
+import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.module.item.dto.ItemMinimalDTO;
 import com.pahanaedu.module.item.model.Item;
@@ -17,7 +17,7 @@ import java.util.Map;
 @WebServlet("/api/item/*")
 public class ItemServlet extends HttpServlet {
 
-    private IServicePrototype<Item, ItemMinimalDTO> itemService;
+    private Service<Item, ItemMinimalDTO> itemService;
 
     public void init() {
         this.itemService = new ItemServiceImpl();
@@ -45,6 +45,7 @@ public class ItemServlet extends HttpServlet {
             return;
         }
 
+
         try {
             Long id = Long.parseLong(pathInfo.substring(1));
             ItemMinimalDTO item = itemService.findById(id);
@@ -63,6 +64,8 @@ public class ItemServlet extends HttpServlet {
         }
 
     }
+
+
 
 
 }

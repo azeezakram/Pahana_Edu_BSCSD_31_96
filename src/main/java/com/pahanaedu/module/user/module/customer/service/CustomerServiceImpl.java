@@ -1,20 +1,16 @@
 package com.pahanaedu.module.user.module.customer.service;
 
-import com.pahanaedu.common.interfaces.IServicePrototype;
-import com.pahanaedu.common.utill.JsonUtil;
+import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.module.user.module.customer.dto.CustomerMinimalDTO;
 import com.pahanaedu.module.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.module.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.module.user.module.customer.model.Customer;
 import com.pahanaedu.module.user.module.customer.repository.CustomerRepositoryImpl;
-import com.pahanaedu.module.user.module.staff.dto.StaffWithoutPasswordDTO;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-public class CustomerServiceImpl implements IServicePrototype<Customer, CustomerMinimalDTO> {
+public class CustomerServiceImpl implements Service<Customer, CustomerMinimalDTO> {
 
     private final CustomerRepositoryImpl customerRepository;
 
