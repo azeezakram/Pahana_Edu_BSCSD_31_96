@@ -3,8 +3,7 @@ package com.pahanaedu.persistence.user.customer;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.business.user.module.customer.model.Customer;
-import com.pahanaedu.config.db.DbConnectionFactoryImpl;
-import com.pahanaedu.config.db.factory.DbConnectionFactory;
+import com.pahanaedu.config.db.impl.DbConnectionFactory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -16,21 +15,23 @@ import static com.pahanaedu.business.user.module.customer.util.CustomerUtils.get
 public class CustomerRepositoryImpl implements Repository<Customer> {
 
     private final DbConnectionFactory dbConnectionFactory;
+    private static final String DATABASE_TYPE = "production";
 
     public CustomerRepositoryImpl () {
-        this.dbConnectionFactory = new DbConnectionFactoryImpl();
+        this.dbConnectionFactory = new DbConnectionFactory();
     }
 
     @Override
     public Customer findById(Long id) {
         Customer customer = null;
-        String query = "select * from customer c join users u on c.id = u.id where c.id=?";
+        String query = "select * from customer c join users u on c.id = u.id where c.id=? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setInt(1, id.intValue());
+            statement.setString(2, Role.CUSTOMER.toString());
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 customer = getCustomerByResultSet(result);
@@ -48,12 +49,13 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
     public List<Customer> findAll() {
 
         List<Customer> customers = new ArrayList<>();
-        String query = "select * from customer c join users u on u.id = c.id";
+        String query = "select * from customer c join users u on u.id = c.id where u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
+            statement.setString(1, Role.CUSTOMER.toString());
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 customers.add(getCustomerByResultSet(result));
@@ -83,13 +85,13 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
                 """;
         System.out.println(customer);
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(newUserSQL, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, customer.getName());
-                statement.setString(2, Role.CUSTOMER.name());
+                statement.setString(2, Role.CUSTOMER.toString());
                 statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
                 result = statement.executeUpdate();
@@ -135,26 +137,26 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
 
         String updateUserSql = """
                     update users
-                    set name = ?, role = ?, updated_at = ? 
-                    where id = ?
+                    set name = ?, updated_at = ?
+                    where id = ? and role = ?
                 """;
 
         String updateCustomerSql = """
-                    update customer
+                    update customer c
                     set account_number = ?, address = ?, phone_number = ?
                     where id = ?
                 """;
         System.out.println(customer);
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(updateUserSql)) {
                 statement.setString(1, customer.getName());
-                statement.setString(2, Role.CUSTOMER.name());
-                statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-                statement.setLong(4, customer.getId());
+                statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+                statement.setLong(3, customer.getId());
+                statement.setString(4, Role.CUSTOMER.toString());
                 result = statement.executeUpdate();
 
                 if (result < 0) {
@@ -185,13 +187,14 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
     public boolean delete(Long id) {
 
         boolean isDeleted = false;
-        String query = "delete from users where id = ?";
+        String query = "delete from users where id = ? and role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
+            statement.setString(2, Role.CUSTOMER.toString());
             int result = statement.executeUpdate();
             if (result > 0) {
                 isDeleted = true;
@@ -208,13 +211,14 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
     public Customer findByAccountNumber(String accountNumber) {
 
         Customer customer = null;
-        String query = "select * from customer c join users u on c.id = u.id where c.account_number = ?";
+        String query = "select * from customer c join users u on c.id = u.id where c.account_number = ? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, accountNumber);
+            statement.setString(2, Role.CUSTOMER.toString());
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 customer = getCustomerByResultSet(result);
@@ -231,13 +235,14 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
     public boolean deleteByAccountNumber(String accountNumber) {
 
         boolean isDeleted = false;
-        String query = "delete from users u using customer c where u.id = c.id and c.account_number = ?";
+        String query = "delete from users u using customer c where u.id = c.id and c.account_number = ? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, accountNumber);
+            statement.setString(2, Role.CUSTOMER.toString());
             int result = statement.executeUpdate();
             if (result > 0) {
                 isDeleted = true;

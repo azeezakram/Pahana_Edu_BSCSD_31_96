@@ -4,8 +4,7 @@ import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.business.user.module.staff.model.Staff;
 import com.pahanaedu.business.user.module.staff.util.StaffUtils;
-import com.pahanaedu.config.db.DbConnectionFactoryImpl;
-import com.pahanaedu.config.db.factory.DbConnectionFactory;
+import com.pahanaedu.config.db.impl.DbConnectionFactory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -20,20 +19,21 @@ public class StaffRepositoryImpl implements Repository<Staff> {
     private static final String DATABASE_TYPE = "production";
 
     public StaffRepositoryImpl () {
-        this.dbConnectionFactory = new DbConnectionFactoryImpl();
+        this.dbConnectionFactory = new DbConnectionFactory();
     }
 
     @Override
     public Staff findById(Long id) {
 
         Staff staff = null;
-        String query = "select * from staff s join users u on s.id = u.id where s.id=?";
+        String query = "select * from staff s join users u on s.id = u.id where s.id=? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setInt(1, id.intValue());
+            statement.setString(2, Role.STAFF.toString());
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 staff = getStaffByResultSet(result);
@@ -52,12 +52,13 @@ public class StaffRepositoryImpl implements Repository<Staff> {
     @Override
     public List<Staff> findAll() {
         List<Staff> staffs = new ArrayList<>();
-        String query = "select * from staff s join users u on u.id = s.id";
+        String query = "select * from staff s join users u on u.id = s.id where u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
+            statement.setString(1, Role.STAFF.toString());
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 staffs.add(getStaffByResultSet(result));
@@ -87,13 +88,13 @@ public class StaffRepositoryImpl implements Repository<Staff> {
                 """;
         System.out.println(staff);
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(newUserSQL, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, staff.getName());
-                statement.setString(2, Role.STAFF.name());
+                statement.setString(2, Role.STAFF.toString());
                 statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
                 result = statement.executeUpdate();
@@ -138,8 +139,8 @@ public class StaffRepositoryImpl implements Repository<Staff> {
 
         String updateUserSQL = """
                     UPDATE users
-                    SET name = ?, role = ?, updated_at = ?
-                    WHERE id = ?
+                    SET name = ?, updated_at = ?
+                    WHERE id = ? and role = ?
                 """;
 
         String updateStaffSQL = """
@@ -149,15 +150,15 @@ public class StaffRepositoryImpl implements Repository<Staff> {
                 """;
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
             try (PreparedStatement updateUserStmt = connection.prepareStatement(updateUserSQL)) {
                 updateUserStmt.setString(1, staff.getName());
-                updateUserStmt.setString(2, Role.STAFF.name());
-                updateUserStmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-                updateUserStmt.setLong(4, staff.getId());
+                updateUserStmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+                updateUserStmt.setLong(3, staff.getId());
+                updateUserStmt.setString(4, Role.STAFF.toString());
                 result = updateUserStmt.executeUpdate();
             }
 
@@ -184,13 +185,14 @@ public class StaffRepositoryImpl implements Repository<Staff> {
     @Override
     public boolean delete(Long id) {
         boolean isDeleted;
-        String query = "DELETE FROM users WHERE id = ?";
+        String query = "DELETE FROM users WHERE id = ? and role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
+            statement.setString(2, Role.STAFF.toString());
             int rowsAffected = statement.executeUpdate();
             isDeleted = rowsAffected > 0;
 
@@ -205,13 +207,14 @@ public class StaffRepositoryImpl implements Repository<Staff> {
     public Staff findByUsername(String username) {
 
         Staff staff = null;
-        String query = "select * from staff s join users u on s.id = u.id where s.username=?";
+        String query = "select * from staff s join users u on s.id = u.id where s.username=? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, username);
+            statement.setString(2, Role.STAFF.toString());
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 staff = getStaffByResultSet(result);

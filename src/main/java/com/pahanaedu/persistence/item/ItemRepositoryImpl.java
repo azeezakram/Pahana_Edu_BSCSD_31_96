@@ -3,8 +3,7 @@ package com.pahanaedu.persistence.item;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.util.ItemUtils;
-import com.pahanaedu.config.db.DbConnectionFactoryImpl;
-import com.pahanaedu.config.db.factory.DbConnectionFactory;
+import com.pahanaedu.config.db.impl.DbConnectionFactory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -14,9 +13,10 @@ import java.util.List;
 public class ItemRepositoryImpl implements Repository<Item> {
 
     private final DbConnectionFactory dbConnectionFactory;
+    private static final String DATABASE_TYPE = "production";
 
     public ItemRepositoryImpl() {
-        this.dbConnectionFactory = new DbConnectionFactoryImpl();
+        this.dbConnectionFactory = new DbConnectionFactory();
     }
 
     @Override
@@ -25,7 +25,7 @@ public class ItemRepositoryImpl implements Repository<Item> {
         String query = "select * from item i join category c on c.id = i.category_id where i.id = ?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
@@ -48,7 +48,7 @@ public class ItemRepositoryImpl implements Repository<Item> {
         String query = "select * from item i join category c on c.id = i.category_id";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             ResultSet result = statement.executeQuery();
@@ -76,7 +76,7 @@ public class ItemRepositoryImpl implements Repository<Item> {
 
         System.out.println(item);
         try (
-                Connection connection = dbConnectionFactory.getConnection("production");
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
         ) {
 
             try (PreparedStatement statement = connection.prepareStatement(newUserSQL, Statement.RETURN_GENERATED_KEYS)) {

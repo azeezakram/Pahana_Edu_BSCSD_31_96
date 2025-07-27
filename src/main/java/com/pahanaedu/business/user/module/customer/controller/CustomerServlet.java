@@ -123,7 +123,6 @@ public class CustomerServlet extends HttpServlet {
         } catch (CustomerAccountNumberAlreadyExistException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
-            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

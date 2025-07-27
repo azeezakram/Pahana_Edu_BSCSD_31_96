@@ -1,4 +1,4 @@
-package com.pahanaedu.config.db;
+package com.pahanaedu.config.db.impl;
 
 import com.pahanaedu.config.db.factory.DbConnection;
 
