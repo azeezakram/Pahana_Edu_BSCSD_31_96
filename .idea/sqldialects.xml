@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/src/main/java/com/pahanaedu/module/item/repository/ItemRepositoryImpl.java" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/pahanaedu/module/user/module/staff/repository/StaffRepositoryImpl.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/pahanaedu/persistence/item/ItemRepositoryImpl.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/pahanaedu/persistence/user/staff/StaffRepositoryImpl.java" dialect="GenericSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>
