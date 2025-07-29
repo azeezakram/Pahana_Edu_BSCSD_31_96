@@ -1,5 +1,6 @@
 package com.pahanaedu.persistence.item;
 
+import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.util.ItemUtils;
@@ -98,7 +99,7 @@ public class ItemRepositoryImpl implements Repository<Item> {
                     }
                 } else {
                     connection.rollback();
-                    throw new SQLException("Creating item failed, no rows affected.");
+                    throw new SQLException("Creating items failed, no rows affected.");
                 }
 
             }
@@ -113,13 +114,46 @@ public class ItemRepositoryImpl implements Repository<Item> {
     }
 
     @Override
-    public Item update(Item obj) {
-        return null;
+    public Item update(Item item) {
+        int result;
+
+        String query = """
+                    update item
+                    set item_name = ?, description = ?, brand = ?, stock = ?, catergory_id = ?, price = ?, updated_at = ?
+                    where id = ?
+                """;
+
+        System.out.println(item);
+        try (
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+                statement.setString(1, item.getItemName());
+                statement.setString(2, item.getDescription());
+                statement.setString(3, item.getBrand());
+                statement.setInt(4, item.getStock());
+                statement.setInt(5, item.getCategory().getId());
+                statement.setInt(6, item.getPrice());
+                statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                result = statement.executeUpdate();
+
+                if (result < 0) {
+                    connection.rollback();
+                    throw new SQLException("Creating item failed, no rows affected.");
+                }
+
+            connection.commit();
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return item;
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        return true;
     }
 
 }

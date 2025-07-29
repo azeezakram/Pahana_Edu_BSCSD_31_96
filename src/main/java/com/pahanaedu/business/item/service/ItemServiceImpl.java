@@ -1,8 +1,8 @@
 package com.pahanaedu.business.item.service;
 
+import com.pahanaedu.business.item.dto.ItemDto;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.common.interfaces.Service;
-import com.pahanaedu.business.item.dto.ItemMinimalDTO;
 import com.pahanaedu.business.item.exception.InvalidItemDetailException;
 import com.pahanaedu.business.item.mapper.ItemMapper;
 import com.pahanaedu.business.item.model.Item;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.pahanaedu.business.item.util.ItemUtils.isValid;
 
-public class ItemServiceImpl implements Service<Item, ItemMinimalDTO> {
+public class ItemServiceImpl implements Service<Item, ItemDto> {
 
     private final Repository<Item> itemIRepository;
 
@@ -21,13 +21,13 @@ public class ItemServiceImpl implements Service<Item, ItemMinimalDTO> {
     }
 
     @Override
-    public ItemMinimalDTO findById(Long id) {
+    public ItemDto findById(Long id) {
         Item item = itemIRepository.findById(id);
         return item != null ? ItemMapper.toItemMinimalDTO(item) : null;
     }
 
     @Override
-    public List<ItemMinimalDTO> findAll() {
+    public List<ItemDto> findAll() {
         List<Item> items = itemIRepository.findAll();
 
         return !items.isEmpty() ? items.stream()
@@ -36,7 +36,7 @@ public class ItemServiceImpl implements Service<Item, ItemMinimalDTO> {
     }
 
     @Override
-    public ItemMinimalDTO create(Item item) {
+    public ItemDto create(Item item) {
         if (isValid(item)) {
             throw  new InvalidItemDetailException("Invalid item detail/s provided");
         }
@@ -46,8 +46,10 @@ public class ItemServiceImpl implements Service<Item, ItemMinimalDTO> {
     }
 
     @Override
-    public ItemMinimalDTO update(Item item) {
-        return null;
+    public ItemDto update(Item item) {
+        Item updatedItem = itemIRepository.update(item);
+
+        return findById(updatedItem.getId());
     }
 
     @Override

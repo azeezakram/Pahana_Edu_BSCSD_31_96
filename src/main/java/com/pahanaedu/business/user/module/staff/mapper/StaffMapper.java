@@ -18,7 +18,7 @@ public class StaffMapper {
     }
 
     public static StaffWithoutPasswordDTO toStaffWithoutPasswordDTO(Staff staff) {
-        return new StaffWithoutPasswordDTO(staff.getId(), staff.getName(), staff.getRole(), staff.getUsername(), staff.getIsActive());
+        return new StaffWithoutPasswordDTO(staff.getId(), staff.getName(), staff.getRole(), staff.getUsername(), staff.getIsActive(), staff.getCreatedAt(), staff.getUpdatedAt());
     }
 
     public static StaffCreationDTO toStaffCreationDTO(Staff staff) {

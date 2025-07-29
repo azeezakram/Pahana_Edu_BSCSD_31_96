@@ -1,8 +1,8 @@
 package com.pahanaedu.business.item.controller;
 
+import com.pahanaedu.business.item.dto.ItemDto;
 import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.common.utill.JsonUtil;
-import com.pahanaedu.business.item.dto.ItemMinimalDTO;
 import com.pahanaedu.business.item.exception.InvalidItemDetailException;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.service.ItemServiceImpl;
@@ -18,7 +18,7 @@ import java.util.Map;
 @WebServlet("/api/item/*")
 public class ItemServlet extends HttpServlet {
 
-    private Service<Item, ItemMinimalDTO> itemService;
+    private Service<Item, ItemDto> itemService;
 
     public void init() {
         this.itemService = new ItemServiceImpl();
@@ -31,7 +31,7 @@ public class ItemServlet extends HttpServlet {
         if (pathInfo == null || pathInfo.equals("/")) {
 
             try {
-                List<ItemMinimalDTO> items = itemService.findAll();
+                List<ItemDto> items = itemService.findAll();
 
                 if (items != null) {
                     JsonUtil.sendJson(res, items, HttpServletResponse.SC_OK);
@@ -49,7 +49,7 @@ public class ItemServlet extends HttpServlet {
 
         try {
             Long id = Long.parseLong(pathInfo.substring(1));
-            ItemMinimalDTO item = itemService.findById(id);
+            ItemDto item = itemService.findById(id);
 
             if (item != null) {
                 JsonUtil.sendJson(res, item, HttpServletResponse.SC_OK);
@@ -80,7 +80,7 @@ public class ItemServlet extends HttpServlet {
                     return;
                 }
 
-                ItemMinimalDTO createdItem = itemService.create(item);
+                ItemDto createdItem = itemService.create(item);
 
                 if (createdItem != null) {
                     JsonUtil.sendJson(res, createdItem, HttpServletResponse.SC_CREATED);

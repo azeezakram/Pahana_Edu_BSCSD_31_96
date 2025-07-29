@@ -1,16 +1,16 @@
 package com.pahanaedu.business.user.module.customer.service;
 
-import com.pahanaedu.common.interfaces.Service;
-import com.pahanaedu.business.user.module.customer.dto.CustomerMinimalDTO;
+import com.pahanaedu.business.user.module.customer.dto.CustomerDto;
 import com.pahanaedu.business.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.business.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.business.user.module.customer.model.Customer;
+import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.persistence.user.customer.CustomerRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CustomerServiceImpl implements Service<Customer, CustomerMinimalDTO> {
+public class CustomerServiceImpl implements Service<Customer, CustomerDto> {
 
     private final CustomerRepositoryImpl customerRepository;
 
@@ -20,26 +20,25 @@ public class CustomerServiceImpl implements Service<Customer, CustomerMinimalDTO
 
 
     @Override
-    public CustomerMinimalDTO findById(Long id) {
+    public CustomerDto findById(Long id) {
         Customer customer = customerRepository.findById(id);
-
-        return customer != null ? CustomerMapper.toCustomerMinimalDTO(customer) : null;
+        return customer != null ? CustomerMapper.toCustomerDto(customer) : null;
     }
 
     @Override
-    public List<CustomerMinimalDTO> findAll() {
+    public List<CustomerDto> findAll() {
         List<Customer> customers = customerRepository.findAll();
 
         return !customers.isEmpty() ? customers
                 .stream()
-                .map(CustomerMapper::toCustomerMinimalDTO)
+                .map(CustomerMapper::toCustomerDto)
                 .toList() : null;
     }
 
     @Override
-    public CustomerMinimalDTO create(Customer customer) {
+    public CustomerDto create(Customer customer) {
 
-        CustomerMinimalDTO existing = findByAccountNumber(customer.getAccountNumber());
+        CustomerDto existing = findByAccountNumber(customer.getAccountNumber());
         if (existing != null) {
             throw  new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
         }
@@ -50,10 +49,10 @@ public class CustomerServiceImpl implements Service<Customer, CustomerMinimalDTO
     }
 
     @Override
-    public CustomerMinimalDTO update(Customer customer) {
+    public CustomerDto update(Customer customer) {
 
-        CustomerMinimalDTO existing = findByAccountNumber(customer.getAccountNumber());
-        if (existing != null && !existing.id().equals(customer.getId())) {
+        CustomerDto existing = findByAccountNumber(customer.getAccountNumber());
+        if (existing != null && !existing.getId().equals(customer.getId())) {
             throw new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
         }
 
@@ -71,10 +70,9 @@ public class CustomerServiceImpl implements Service<Customer, CustomerMinimalDTO
         return customerRepository.delete(id);
     }
 
-
-    public CustomerMinimalDTO findByAccountNumber(String accountNumber) {
+    public CustomerDto findByAccountNumber(String accountNumber) {
         Customer customer = customerRepository.findByAccountNumber(accountNumber);
-        return Objects.nonNull(customer) ? CustomerMapper.toCustomerMinimalDTO(customer) : null;
+        return Objects.nonNull(customer) ? CustomerMapper.toCustomerDto(customer) : null;
     }
 
     public boolean deleteByAccountNumber(String accountNumber) {
