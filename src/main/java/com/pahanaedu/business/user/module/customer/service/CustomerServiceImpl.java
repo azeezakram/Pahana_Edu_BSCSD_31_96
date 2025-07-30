@@ -1,6 +1,6 @@
 package com.pahanaedu.business.user.module.customer.service;
 
-import com.pahanaedu.business.user.module.customer.dto.CustomerDto;
+import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
 import com.pahanaedu.business.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.business.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.business.user.module.customer.model.Customer;
@@ -10,7 +10,7 @@ import com.pahanaedu.persistence.user.customer.CustomerRepositoryImpl;
 import java.util.List;
 import java.util.Objects;
 
-public class CustomerServiceImpl implements Service<Customer, CustomerDto> {
+public class CustomerServiceImpl implements Service<Customer, CustomerDTO> {
 
     private final CustomerRepositoryImpl customerRepository;
 
@@ -20,13 +20,13 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDto> {
 
 
     @Override
-    public CustomerDto findById(Long id) {
+    public CustomerDTO findById(Long id) {
         Customer customer = customerRepository.findById(id);
         return customer != null ? CustomerMapper.toCustomerDto(customer) : null;
     }
 
     @Override
-    public List<CustomerDto> findAll() {
+    public List<CustomerDTO> findAll() {
         List<Customer> customers = customerRepository.findAll();
 
         return !customers.isEmpty() ? customers
@@ -36,9 +36,9 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDto> {
     }
 
     @Override
-    public CustomerDto create(Customer customer) {
+    public CustomerDTO create(Customer customer) {
 
-        CustomerDto existing = findByAccountNumber(customer.getAccountNumber());
+        CustomerDTO existing = findByAccountNumber(customer.getAccountNumber());
         if (existing != null) {
             throw  new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
         }
@@ -49,9 +49,9 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDto> {
     }
 
     @Override
-    public CustomerDto update(Customer customer) {
+    public CustomerDTO update(Customer customer) {
 
-        CustomerDto existing = findByAccountNumber(customer.getAccountNumber());
+        CustomerDTO existing = findByAccountNumber(customer.getAccountNumber());
         if (existing != null && !existing.getId().equals(customer.getId())) {
             throw new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
         }
@@ -70,7 +70,7 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDto> {
         return customerRepository.delete(id);
     }
 
-    public CustomerDto findByAccountNumber(String accountNumber) {
+    public CustomerDTO findByAccountNumber(String accountNumber) {
         Customer customer = customerRepository.findByAccountNumber(accountNumber);
         return Objects.nonNull(customer) ? CustomerMapper.toCustomerDto(customer) : null;
     }

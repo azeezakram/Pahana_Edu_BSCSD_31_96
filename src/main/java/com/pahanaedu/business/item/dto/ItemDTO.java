@@ -4,7 +4,7 @@ import com.pahanaedu.business.category.model.Category;
 
 import java.time.LocalDateTime;
 
-public class ItemDto {
+public class ItemDTO {
 
     private final Long id;
     private final String itemName;
@@ -16,7 +16,7 @@ public class ItemDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    private ItemDto(Builder builder) {
+    private ItemDTO(Builder builder) {
         this.id = builder.id;
         this.itemName = builder.itemName;
         this.description = builder.description;
@@ -120,8 +120,8 @@ public class ItemDto {
             return this;
         }
 
-        public ItemDto build() {
-            return new ItemDto(this);
+        public ItemDTO build() {
+            return new ItemDTO(this);
         }
     }
 

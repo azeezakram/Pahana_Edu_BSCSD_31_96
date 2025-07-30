@@ -1,14 +1,14 @@
 package com.pahanaedu.business.user.module.customer.mapper;
 
 
-import com.pahanaedu.business.user.module.customer.dto.CustomerDto;
+import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
 import com.pahanaedu.business.user.module.customer.model.Customer;
 
 public class CustomerMapper {
 
-    public static CustomerDto toCustomerDto(Customer customer) {
+    public static CustomerDTO toCustomerDto(Customer customer) {
 
-        return new CustomerDto.Builder()
+        return new CustomerDTO.Builder()
                 .setId(customer.getId())
                 .setName(customer.getName())
                 .setRole(customer.getRole())

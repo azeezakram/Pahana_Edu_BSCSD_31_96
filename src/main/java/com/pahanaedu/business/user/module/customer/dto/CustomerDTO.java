@@ -2,7 +2,7 @@ package com.pahanaedu.business.user.module.customer.dto;
 
 import java.time.LocalDateTime;
 
-public class CustomerDto {
+public class CustomerDTO {
 
     private final Long id;
     private final String name;
@@ -13,7 +13,7 @@ public class CustomerDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    private CustomerDto(Builder builder) {
+    private CustomerDTO(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.role = builder.role;
@@ -106,8 +106,8 @@ public class CustomerDto {
             return this;
         }
 
-        public CustomerDto build() {
-            return new CustomerDto(this);
+        public CustomerDTO build() {
+            return new CustomerDTO(this);
         }
 
     }

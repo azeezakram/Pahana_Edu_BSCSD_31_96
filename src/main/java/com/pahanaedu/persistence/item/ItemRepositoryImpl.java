@@ -153,7 +153,24 @@ public class ItemRepositoryImpl implements Repository<Item> {
 
     @Override
     public boolean delete(Long id) {
-        return true;
+        boolean isDeleted = false;
+        String query = "delete from item where id = ?";
+
+        try (
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setLong(1, id);
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                isDeleted = true;
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return isDeleted;
     }
 
 }

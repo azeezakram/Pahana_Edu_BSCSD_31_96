@@ -1,13 +1,13 @@
 package com.pahanaedu.business.item.mapper;
 
-import com.pahanaedu.business.item.dto.ItemDto;
+import com.pahanaedu.business.item.dto.ItemDTO;
 import com.pahanaedu.business.item.model.Item;
 
 public class ItemMapper {
 
-    public static ItemDto toItemMinimalDTO(Item item) {
+    public static ItemDTO toItemDTO(Item item) {
 
-        return new ItemDto.Builder()
+        return new ItemDTO.Builder()
                 .id(item.getId())
                 .itemName(item.getItemName())
                 .description(item.getDescription())

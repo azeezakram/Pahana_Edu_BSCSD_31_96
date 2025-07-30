@@ -1,9 +1,9 @@
 package com.pahanaedu.business.item.service;
 
-import com.pahanaedu.business.item.dto.ItemDto;
+import com.pahanaedu.business.item.dto.ItemDTO;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.common.interfaces.Service;
-import com.pahanaedu.business.item.exception.InvalidItemDetailException;
+import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.mapper.ItemMapper;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.persistence.item.ItemRepositoryImpl;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.pahanaedu.business.item.util.ItemUtils.isValid;
 
-public class ItemServiceImpl implements Service<Item, ItemDto> {
+public class ItemServiceImpl implements Service<Item, ItemDTO> {
 
     private final Repository<Item> itemIRepository;
 
@@ -21,24 +21,24 @@ public class ItemServiceImpl implements Service<Item, ItemDto> {
     }
 
     @Override
-    public ItemDto findById(Long id) {
+    public ItemDTO findById(Long id) {
         Item item = itemIRepository.findById(id);
-        return item != null ? ItemMapper.toItemMinimalDTO(item) : null;
+        return item != null ? ItemMapper.toItemDTO(item) : null;
     }
 
     @Override
-    public List<ItemDto> findAll() {
+    public List<ItemDTO> findAll() {
         List<Item> items = itemIRepository.findAll();
 
         return !items.isEmpty() ? items.stream()
-                .map(ItemMapper::toItemMinimalDTO)
+                .map(ItemMapper::toItemDTO)
                 .toList() : null;
     }
 
     @Override
-    public ItemDto create(Item item) {
+    public ItemDTO create(Item item) {
         if (isValid(item)) {
-            throw  new InvalidItemDetailException("Invalid item detail/s provided");
+            throw  new ItemException("Invalid item detail/s provided");
         }
 
         Item newItem = itemIRepository.save(item);
@@ -46,7 +46,7 @@ public class ItemServiceImpl implements Service<Item, ItemDto> {
     }
 
     @Override
-    public ItemDto update(Item item) {
+    public ItemDTO update(Item item) {
         Item updatedItem = itemIRepository.update(item);
 
         return findById(updatedItem.getId());
@@ -54,7 +54,7 @@ public class ItemServiceImpl implements Service<Item, ItemDto> {
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        return itemIRepository.delete(id);
     }
 
 }

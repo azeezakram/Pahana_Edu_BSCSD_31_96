@@ -127,7 +127,6 @@ public class StaffServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();

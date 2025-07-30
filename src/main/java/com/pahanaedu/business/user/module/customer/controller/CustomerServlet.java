@@ -1,6 +1,6 @@
 package com.pahanaedu.business.user.module.customer.controller;
 
-import com.pahanaedu.business.user.module.customer.dto.CustomerDto;
+import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
 import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.business.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.business.user.module.customer.model.Customer;
@@ -27,7 +27,7 @@ public class CustomerServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            List<CustomerDto> customers = customerService.findAll();
+            List<CustomerDTO> customers = customerService.findAll();
 
             if (customers != null) {
                 JsonUtil.sendJson(res, customers, HttpServletResponse.SC_OK);
@@ -40,7 +40,7 @@ public class CustomerServlet extends HttpServlet {
 
         try {
             Long id = Long.parseLong(pathInfo.substring(1));
-            CustomerDto customer = customerService.findById(id);
+            CustomerDTO customer = customerService.findById(id);
 
             if (customer != null) {
                 JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
@@ -52,7 +52,7 @@ public class CustomerServlet extends HttpServlet {
         } catch (NumberFormatException e) {
 
             String accountNumber = pathInfo.substring(1);
-            CustomerDto customer = customerService.findByAccountNumber(accountNumber);
+            CustomerDTO customer = customerService.findByAccountNumber(accountNumber);
 
             if (customer != null) {
                 JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
@@ -80,7 +80,7 @@ public class CustomerServlet extends HttpServlet {
                     return;
                 }
 
-                CustomerDto createdCustomer = customerService.create(customer);
+                CustomerDTO createdCustomer = customerService.create(customer);
 
                 if (createdCustomer != null) {
                     JsonUtil.sendJson(res, createdCustomer, HttpServletResponse.SC_CREATED);
@@ -111,7 +111,7 @@ public class CustomerServlet extends HttpServlet {
                     return;
                 }
 
-                CustomerDto updatedCustomer = customerService.update(customer);
+                CustomerDTO updatedCustomer = customerService.update(customer);
 
                 if (updatedCustomer != null) {
                     JsonUtil.sendJson(res, updatedCustomer, HttpServletResponse.SC_OK);
