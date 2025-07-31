@@ -119,7 +119,7 @@ public class ItemRepositoryImpl implements Repository<Item> {
 
         String query = """
                     update item
-                    set item_name = ?, description = ?, brand = ?, stock = ?, catergory_id = ?, price = ?, updated_at = ?
+                    set item_name = ?, description = ?, brand = ?, stock = ?, category_id = ?, price = ?, updated_at = ?
                     where id = ?
                 """;
 
@@ -135,14 +135,13 @@ public class ItemRepositoryImpl implements Repository<Item> {
                 statement.setInt(5, item.getCategory().getId());
                 statement.setInt(6, item.getPrice());
                 statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                statement.setLong(8, item.getId());
                 result = statement.executeUpdate();
 
                 if (result < 0) {
                     connection.rollback();
                     throw new SQLException("Creating item failed, no rows affected.");
                 }
-
-            connection.commit();
 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
