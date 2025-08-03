@@ -8,13 +8,15 @@ public class SellItem {
     private Long id;
     private Item item;
     private Long sellHistoryId;
+    private Integer sellPrice;
     private Integer unit;
     private Integer subTotal;
 
-    public SellItem(Long id, Item item, Long sellHistoryId, Integer unit, Integer subTotal) {
+    public SellItem(Long id, Item item, Long sellHistoryId, Integer sellPrice, Integer unit, Integer subTotal) {
         this.id = id;
         this.item = item;
         this.sellHistoryId = sellHistoryId;
+        this.sellPrice = sellPrice;
         this.unit = unit;
         this.subTotal = subTotal;
     }
@@ -46,6 +48,14 @@ public class SellItem {
         this.sellHistoryId = sellHistoryId;
     }
 
+    public Integer getSellPrice() {
+        return sellPrice;
+    }
+
+    public void setSellPrice(Integer sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+
     public Integer getUnit() {
         return unit;
     }
@@ -68,9 +78,9 @@ public class SellItem {
                 "id=" + id +
                 ", item=" + item +
                 ", sellHistoryId=" + sellHistoryId +
+                ", sellPrice=" + sellPrice +
                 ", unit=" + unit +
                 ", subTotal=" + subTotal +
                 '}';
     }
-
 }

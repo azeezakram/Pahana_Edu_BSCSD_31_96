@@ -123,7 +123,6 @@ public class ItemServlet extends HttpServlet {
                 JsonUtil.sendJson(res, Map.of("error", "Item you are trying update not found"), HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

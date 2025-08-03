@@ -18,6 +18,7 @@ import java.util.Map;
 public class CustomerServlet extends HttpServlet {
     private CustomerServiceImpl customerService;
 
+    @Override
     public void init() {
         this.customerService = new CustomerServiceImpl();
     }
