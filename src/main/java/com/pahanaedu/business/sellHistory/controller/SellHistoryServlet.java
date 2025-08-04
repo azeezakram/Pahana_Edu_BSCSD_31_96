@@ -1,10 +1,7 @@
-package com.pahanaedu.business.sellHistory.servlet;
+package com.pahanaedu.business.sellHistory.controller;
 
 import com.pahanaedu.business.sellHistory.dto.SellHistoryDTO;
-import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellHistory.service.SellHistoryServiceImpl;
-import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
-import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,17 +26,17 @@ public class SellHistoryServlet extends HttpServlet {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
-//        if (pathInfo == null || pathInfo.equals("/")) {
-//            List<SellHistoryDTO> customers = sellHistoryService.findAll();
-//
-//            if (customers != null) {
-//                JsonUtil.sendJson(res, customers, HttpServletResponse.SC_OK);
-//                return;
-//            }
-//
-//            JsonUtil.sendJson(res, Map.of("error", "Customers not found"), HttpServletResponse.SC_NOT_FOUND);
-//            return;
-//        }
+        if (pathInfo == null || pathInfo.equals("/")) {
+            List<SellHistoryDTO> sellHistories = sellHistoryService.findAll();
+
+            if (sellHistories != null) {
+                JsonUtil.sendJson(res, sellHistories, HttpServletResponse.SC_OK);
+                return;
+            }
+
+            JsonUtil.sendJson(res, Map.of("error", "Sell history/s not found"), HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
 
         try {
             Long id = Long.parseLong(pathInfo.substring(1));

@@ -1,5 +1,7 @@
 package com.pahanaedu.business.sellHistory.service;
 
+import com.pahanaedu.business.item.mapper.ItemMapper;
+import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.sellHistory.dto.SellHistoryDTO;
 import com.pahanaedu.business.sellHistory.mapper.SellHistoryMapper;
 import com.pahanaedu.business.sellHistory.model.SellHistory;
@@ -27,7 +29,11 @@ public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryD
 
     @Override
     public List<SellHistoryDTO> findAll() {
-        return List.of();
+        List<SellHistory> items = sellHistoryRepository.findAll();
+
+        return !items.isEmpty() ? items.stream()
+                .map(SellHistoryMapper::toSellHistoryDTO)
+                .toList() : null;
     }
 
     @Override
