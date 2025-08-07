@@ -172,4 +172,39 @@ public class ItemRepositoryImpl implements Repository<Item> {
         return isDeleted;
     }
 
+    public boolean updateStock(Long itemId, Integer updatedStock) {
+
+        boolean isUpdated = false;
+
+        String query = """
+                    update item(stock, updated_at)
+                    set stock = ?, updated_at = ?
+                    where id = ?
+                """;
+
+        try (
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            connection.setAutoCommit(false);
+            statement.setInt(1, updatedStock);
+            statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setLong(3, itemId);
+
+            int result = statement.executeUpdate();
+
+            if (result > 0)
+                isUpdated = true;
+            else {
+                connection.rollback();
+                throw new SQLException("Updating item stock failed, no rows affected.");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return isUpdated;
+
+    }
 }

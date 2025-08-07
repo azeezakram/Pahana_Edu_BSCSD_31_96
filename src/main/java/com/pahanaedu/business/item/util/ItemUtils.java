@@ -23,7 +23,11 @@ public class ItemUtils {
     }
 
 
-    public static boolean isValid(Item item) {
-        return (item.getItemName() == null || item.getItemName().isBlank()) || (item.getPrice() < 1 || item.getPrice() == null) || (item.getStock() < 0);
+    public static boolean isInvalid(Item item) {
+        return item == null
+                || item.getItemName() == null || item.getItemName().isBlank()
+                || item.getPrice() == null || item.getPrice() < 1
+                || item.getStock() == null || item.getStock() < 0;
     }
+
 }

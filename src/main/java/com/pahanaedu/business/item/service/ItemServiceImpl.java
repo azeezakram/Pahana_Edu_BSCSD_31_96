@@ -1,6 +1,7 @@
 package com.pahanaedu.business.item.service;
 
 import com.pahanaedu.business.item.dto.ItemDTO;
+import com.pahanaedu.business.item.util.ItemUtils;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.business.item.exception.ItemException;
@@ -10,11 +11,9 @@ import com.pahanaedu.persistence.item.ItemRepositoryImpl;
 
 import java.util.List;
 
-import static com.pahanaedu.business.item.util.ItemUtils.isValid;
-
 public class ItemServiceImpl implements Service<Item, ItemDTO> {
 
-    private final Repository<Item> itemIRepository;
+    private final ItemRepositoryImpl itemIRepository;
 
     public ItemServiceImpl() {
         this.itemIRepository = new ItemRepositoryImpl();
@@ -37,7 +36,7 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
 
     @Override
     public ItemDTO create(Item item) {
-        if (isValid(item)) {
+        if (ItemUtils.isInvalid(item)) {
             throw  new ItemException("Invalid item detail/s provided");
         }
 
@@ -57,4 +56,16 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
         return itemIRepository.delete(id);
     }
 
+    public void updateStock(Long itemId, Integer itemCurrentStock, Integer soldUnit) {
+
+        if (itemId == null || itemId < 1 ||
+                itemCurrentStock == null || itemCurrentStock < 0 ||
+                soldUnit == null || soldUnit < 0) {
+            throw new ItemException("Problem in updating stock");
+        }
+
+
+        itemIRepository.updateStock(itemId, itemCurrentStock - soldUnit);
+
+    }
 }

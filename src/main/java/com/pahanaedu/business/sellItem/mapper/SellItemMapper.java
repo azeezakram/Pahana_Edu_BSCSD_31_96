@@ -11,6 +11,7 @@ public class SellItemMapper {
                 .id(sellItem.getId())
                 .item(ItemMapper.toItemDTO(sellItem.getItem()))
                 .sellHistoryId(sellItem.getSellHistoryId())
+                .sellPrice(sellItem.getSellPrice())
                 .unit(sellItem.getUnit())
                 .subTotal(sellItem.getSubTotal())
                 .build();

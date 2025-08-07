@@ -3,14 +3,11 @@ package com.pahanaedu.persistence.sellhistory;
 import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellHistory.util.SellHistoryUtils;
 import com.pahanaedu.business.sellItem.model.SellItem;
-import com.pahanaedu.business.sellItem.util.SellItemUtils;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.config.db.impl.DbConnectionFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,8 +122,68 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
     }
 
     @Override
-    public SellHistory save(SellHistory obj) {
-        return null;
+    public SellHistory save(SellHistory sellHistory) {
+
+        int result;
+        long generatedId = 0L;
+
+        String newSellHistoryQuery = """
+                    insert into sell_history(customer_id, grand_total, created_at)
+                    values (?, ?, ?)
+                """;
+
+        String newSellItemQuery = """
+                    insert into sell_item(sell_history_id, item_id, sell_price, unit, subtotal)
+                    values (?, ?, ?, ?, ?)
+                """;
+
+        System.out.println(sellHistory);
+
+        try (
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+        ) {
+
+            try (PreparedStatement statement = connection.prepareStatement(newSellHistoryQuery, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setLong(1, sellHistory.getCustomer().getId());
+                statement.setInt(2, sellHistory.getGrandTotal());
+                statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+                result = statement.executeUpdate();
+
+                if (result > 0) {
+                    try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            generatedId = generatedKeys.getLong("id");
+                        }
+                    }
+                } else {
+                    connection.rollback();
+                    throw new SQLException("Creating sell history failed, no rows affected.");
+                }
+
+                try (PreparedStatement statement2 = connection.prepareStatement(newSellItemQuery, Statement.RETURN_GENERATED_KEYS)) {
+                    for (SellItem sellItem : sellHistory.getSellItems()) {
+                        statement2.setLong(1, generatedId);
+                        statement2.setLong(2, sellItem.getItem().getId());
+                        statement2.setInt(3, sellItem.getSellPrice());
+                        statement2.setInt(4, sellItem.getUnit());
+                        statement2.setInt(5, sellItem.getSubTotal());
+                        result = statement2.executeUpdate();
+
+                        if (result < 0) {
+                            connection.rollback();
+                            throw new SQLException("Creating sell item failed, no rows affected.");
+                        }
+                    }
+                }
+            }
+
+            sellHistory.setId(generatedId);
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return sellHistory;
     }
 
     @Override

@@ -1,6 +1,11 @@
 package com.pahanaedu.business.sellHistory.controller;
 
+import com.pahanaedu.business.item.dto.ItemDTO;
+import com.pahanaedu.business.item.exception.ItemException;
+import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.sellHistory.dto.SellHistoryDTO;
+import com.pahanaedu.business.sellHistory.exception.SellHistoryException;
+import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellHistory.service.SellHistoryServiceImpl;
 import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
@@ -52,6 +57,38 @@ public class SellHistoryServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             JsonUtil.sendJson(res, Map.of("error", "Invalid sell history id"), HttpServletResponse.SC_NOT_FOUND);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+
+                SellHistory sellHistory = JsonUtil.extract(req, SellHistory.class);
+
+                if (sellHistory == null) {
+                    JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                SellHistoryDTO sellHistoryDTO = sellHistoryService.create(sellHistory);
+
+                if (sellHistoryDTO != null) {
+                    JsonUtil.sendJson(res, sellHistoryDTO, HttpServletResponse.SC_CREATED);
+                    return;
+                }
+
+                JsonUtil.sendJson(res, Map.of("error", "Sell history could not be created"), HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (SellHistoryException e) {
+            JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
             e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

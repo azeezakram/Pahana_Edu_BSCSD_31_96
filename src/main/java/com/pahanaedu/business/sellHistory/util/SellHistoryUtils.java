@@ -5,7 +5,6 @@ import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellItem.model.SellItem;
 import com.pahanaedu.business.user.module.customer.model.Customer;
-import com.pahanaedu.business.user.module.customer.util.CustomerUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,8 +54,13 @@ public class SellHistoryUtils {
         );
     }
 
+    public static boolean isInvalid(SellHistory sellHistory) {
+        return sellHistory == null ||
+                sellHistory.getCustomer() == null ||
+                sellHistory.getCustomer().getId() == null ||
+                sellHistory.getCustomer().getId() < 1 ||
+                sellHistory.getSellItems() == null ||
+                sellHistory.getSellItems().isEmpty();
+    }
 
-//    public static boolean isValid(Item item) {
-//        return (item.getItemName() == null || item.getItemName().isBlank()) || (item.getPrice() < 1 || item.getPrice() == null) || (item.getStock() < 0);
-//    }
 }
