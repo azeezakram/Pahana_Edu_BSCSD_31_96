@@ -174,10 +174,10 @@ public class ItemRepositoryImpl implements Repository<Item> {
 
     public boolean updateStock(Long itemId, Integer updatedStock) {
 
-        boolean isUpdated = false;
+        boolean isUpdated;
 
         String query = """
-                    update item(stock, updated_at)
+                    update item
                     set stock = ?, updated_at = ?
                     where id = ?
                 """;
@@ -199,6 +199,7 @@ public class ItemRepositoryImpl implements Repository<Item> {
                 connection.rollback();
                 throw new SQLException("Updating item stock failed, no rows affected.");
             }
+            connection.commit();
 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);

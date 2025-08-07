@@ -56,16 +56,20 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
         return itemIRepository.delete(id);
     }
 
-    public void updateStock(Long itemId, Integer itemCurrentStock, Integer soldUnit) {
+    public void updateStock(ItemDTO item, Integer soldUnit) {
 
-        if (itemId == null || itemId < 1 ||
-                itemCurrentStock == null || itemCurrentStock < 0 ||
+        if (item.getId() == null || item.getId() < 1 ||
+                item.getStock() == null || item.getStock() < 0 ||
                 soldUnit == null || soldUnit < 0) {
-            throw new ItemException("Problem in updating stock");
+            throw new ItemException("Item id or item stock or sell item unit is null");
         }
 
 
-        itemIRepository.updateStock(itemId, itemCurrentStock - soldUnit);
+        boolean result = itemIRepository.updateStock(item.getId(), item.getStock() - soldUnit);
+
+        if (!result) {
+            throw new ItemException("Problem in updating stock");
+        }
 
     }
 }
