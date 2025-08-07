@@ -1,23 +1,23 @@
 package com.pahanaedu.persistence.item;
 
+import com.pahanaedu.business.user.enums.Role;
+import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.util.ItemUtils;
-import com.pahanaedu.common.interfaces.Repository;
-import com.pahanaedu.common.interfaces.UpdatableRepository;
-import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
+import com.pahanaedu.config.db.impl.DbConnectionFactory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository<Item> {
+public class ItemRepositoryImpl implements Repository<Item> {
 
-    private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
+    private final DbConnectionFactory dbConnectionFactory;
     private static final String DATABASE_TYPE = "production";
 
     public ItemRepositoryImpl() {
-        this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
+        this.dbConnectionFactory = new DbConnectionFactory();
     }
 
     @Override
@@ -26,13 +26,12 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
         String query = "select * from item i join category c on c.id = i.category_id where i.id = ?";
 
         try (
-                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-
                 item = ItemUtils.getItemByResultSet(result);
             }
             System.out.println(item);
@@ -50,7 +49,7 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
         String query = "select * from item i join category c on c.id = i.category_id";
 
         try (
-                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             ResultSet result = statement.executeQuery();
@@ -78,7 +77,7 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
 
         System.out.println(item);
         try (
-                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
         ) {
 
             try (PreparedStatement statement = connection.prepareStatement(newUserSQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -126,23 +125,23 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
 
         System.out.println(item);
         try (
-                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
-            statement.setString(1, item.getItemName());
-            statement.setString(2, item.getDescription());
-            statement.setString(3, item.getBrand());
-            statement.setInt(4, item.getStock());
-            statement.setInt(5, item.getCategory().getId());
-            statement.setInt(6, item.getPrice());
-            statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
-            statement.setLong(8, item.getId());
-            result = statement.executeUpdate();
+                statement.setString(1, item.getItemName());
+                statement.setString(2, item.getDescription());
+                statement.setString(3, item.getBrand());
+                statement.setInt(4, item.getStock());
+                statement.setInt(5, item.getCategory().getId());
+                statement.setInt(6, item.getPrice());
+                statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                statement.setLong(8, item.getId());
+                result = statement.executeUpdate();
 
-            if (result < 0) {
-                connection.rollback();
-                throw new SQLException("Creating item failed, no rows affected.");
-            }
+                if (result < 0) {
+                    connection.rollback();
+                    throw new SQLException("Creating item failed, no rows affected.");
+                }
 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -157,7 +156,7 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
         String query = "delete from item where id = ?";
 
         try (
-                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
@@ -174,26 +173,39 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
     }
 
     public boolean updateStock(Long itemId, Integer updatedStock) {
+
+        boolean isUpdated;
+
         String query = """
-                    UPDATE item
-                    SET stock = ?, updated_at = ?
-                    WHERE id = ?
+                    update item
+                    set stock = ?, updated_at = ?
+                    where id = ?
                 """;
 
         try (
-                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
+            connection.setAutoCommit(false);
             statement.setInt(1, updatedStock);
             statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             statement.setLong(3, itemId);
 
             int result = statement.executeUpdate();
-            return result > 0;
+
+            if (result > 0)
+                isUpdated = true;
+            else {
+                connection.rollback();
+                throw new SQLException("Updating item stock failed, no rows affected.");
+            }
+            connection.commit();
 
         } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException("Failed to update stock for itemId: " + itemId, e);
+            throw new RuntimeException(e);
         }
-    }
 
+        return isUpdated;
+
+    }
 }

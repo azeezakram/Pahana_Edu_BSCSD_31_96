@@ -138,7 +138,7 @@ public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryD
             grandTotal += sellItem.getSubTotal();
 
             try {
-                itemService.updateStock(item.getId(), item.getStock(), sellItem.getUnit());
+                itemService.updateStock(item, sellItem.getUnit());
             } catch (ItemException e) {
                 throw new SellHistoryException("Failed to update stock for " + item.getId() + ": " + e.getMessage());
             }
