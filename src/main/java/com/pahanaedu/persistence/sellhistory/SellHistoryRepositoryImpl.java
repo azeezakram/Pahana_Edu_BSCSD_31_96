@@ -193,6 +193,38 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        boolean isDeleted = false;
+        String sellItemsQuery = "delete from sell_item where sell_history_id = ?";
+        String sellHistoryQuery = "delete from sell_history where id = ?";
+
+        try (
+                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
+        ) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement statement1 = connection.prepareStatement(sellItemsQuery)) {
+                statement1.setLong(1, id);
+                statement1.executeUpdate();
+            }
+
+            try (PreparedStatement statement2 = connection.prepareStatement(sellHistoryQuery)) {
+                statement2.setLong(1, id);
+                int result = statement2.executeUpdate();
+
+                if (result == 0) {
+                    connection.rollback();
+                    throw new SQLException("No sell history found with id: " + id);
+                }
+            }
+
+            connection.commit();
+            isDeleted = true;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return isDeleted;
     }
+
 }

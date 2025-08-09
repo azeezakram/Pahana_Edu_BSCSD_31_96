@@ -90,8 +90,35 @@ public class SellHistoryServlet extends HttpServlet {
         } catch (SellHistoryException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
-            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("application/json");
+        String pathInfo = req.getPathInfo();
+
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                JsonUtil.sendJson(res, Map.of("error", "Sell history ID is missing in URL"), HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            long id = Long.parseLong(pathInfo.substring(1));
+            boolean result = sellHistoryService.delete(id);
+
+            if (result) {
+                JsonUtil.sendJson(res, Map.of("message","Successfully deleted sell history ID: " + id
+                ), HttpServletResponse.SC_OK);
+            } else {
+                JsonUtil.sendJson(res, Map.of("error", "Not found sell history ID: " + id), HttpServletResponse.SC_NOT_FOUND);
+            }
+
+        } catch (NumberFormatException e) {
+            JsonUtil.sendJson(res, Map.of("error", "Invalid sell history ID "), HttpServletResponse.SC_BAD_REQUEST);
+        } catch (Exception e) {
+            JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 

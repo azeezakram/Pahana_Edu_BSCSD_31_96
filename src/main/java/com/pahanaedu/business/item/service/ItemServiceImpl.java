@@ -64,8 +64,10 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
             throw new ItemException("Problem in updating stock");
         }
 
+        boolean result = itemIRepository.updateStock(itemId, itemCurrentStock - soldUnit);
 
-        itemIRepository.updateStock(itemId, itemCurrentStock - soldUnit);
-
+        if (!result){
+            throw new ItemException("Stock update couldn't be done, try again");
+        }
     }
 }

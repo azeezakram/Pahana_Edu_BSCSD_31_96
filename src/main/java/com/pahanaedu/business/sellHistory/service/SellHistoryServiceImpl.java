@@ -84,6 +84,6 @@ public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryD
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        return sellHistoryRepository.delete(id);
     }
 }
