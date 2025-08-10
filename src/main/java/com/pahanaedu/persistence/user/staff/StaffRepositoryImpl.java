@@ -1,10 +1,9 @@
 package com.pahanaedu.persistence.user.staff;
 
-import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.business.user.module.staff.model.Staff;
 import com.pahanaedu.business.user.module.staff.util.StaffUtils;
-import com.pahanaedu.common.interfaces.UpdatableRepository;
+import com.pahanaedu.config.db.factory.DbConnectionFactory;
 import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
@@ -14,9 +13,9 @@ import java.util.List;
 
 import static com.pahanaedu.business.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
-public class StaffRepositoryImpl implements Repository<Staff>, UpdatableRepository<Staff> {
+public class StaffRepositoryImpl implements StaffRepository {
 
-    private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
+    private final DbConnectionFactory dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
     public StaffRepositoryImpl () {
@@ -46,9 +45,7 @@ public class StaffRepositoryImpl implements Repository<Staff>, UpdatableReposito
         }
 
         return staff;
-
     }
-
 
     @Override
     public List<Staff> findAll() {

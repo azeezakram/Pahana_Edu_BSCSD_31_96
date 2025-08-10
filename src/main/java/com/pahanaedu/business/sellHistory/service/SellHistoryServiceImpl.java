@@ -2,6 +2,7 @@ package com.pahanaedu.business.sellHistory.service;
 
 import com.pahanaedu.business.item.dto.ItemDTO;
 import com.pahanaedu.business.item.exception.ItemException;
+import com.pahanaedu.business.item.service.ItemService;
 import com.pahanaedu.business.item.service.ItemServiceImpl;
 import com.pahanaedu.business.sellHistory.dto.SellHistoryDTO;
 import com.pahanaedu.business.sellHistory.exception.SellHistoryException;
@@ -10,20 +11,22 @@ import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellHistory.util.SellHistoryUtils;
 import com.pahanaedu.business.sellItem.dto.SellItemDTO;
 import com.pahanaedu.business.sellItem.model.SellItem;
+import com.pahanaedu.business.sellItem.service.SellItemService;
 import com.pahanaedu.business.sellItem.service.SellItemServiceImpl;
 import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
 import com.pahanaedu.business.user.module.customer.service.CustomerServiceImpl;
 import com.pahanaedu.common.interfaces.Service;
+import com.pahanaedu.persistence.sellhistory.SellHistoryRepository;
 import com.pahanaedu.persistence.sellhistory.SellHistoryRepositoryImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryDTO> {
+public class SellHistoryServiceImpl implements SellHistoryService {
 
-    private final SellHistoryRepositoryImpl sellHistoryRepository;
-    private final SellItemServiceImpl sellItemService;
-    private final ItemServiceImpl itemService;
+    private final SellHistoryRepository sellHistoryRepository;
+    private final SellItemService sellItemService;
+    private final ItemService itemService;
     private final CustomerServiceImpl customerService;
 
     public SellHistoryServiceImpl() {
@@ -46,8 +49,8 @@ public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryD
         return Objects.nonNull(sellHistoryDTO) ? sellHistoryDTO : null;
     }
 
+    @Override
     public SellHistoryDTO findByIdWithItems(Long id) {
-        System.out.println("triggered");
         SellHistoryDTO sellHistoryDTO = null;
         SellHistory sellHistory = sellHistoryRepository.findById(id);
         if (sellHistory != null) {
@@ -75,6 +78,7 @@ public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryD
         return sellHistoryDTOS ;
     }
 
+    @Override
     public List<SellHistoryDTO> findAllWithItems() {
         List<SellHistory> sellHistories = sellHistoryRepository.findAll();
         if (sellHistories == null || sellHistories.isEmpty()) {
@@ -112,9 +116,6 @@ public class SellHistoryServiceImpl implements Service<SellHistory, SellHistoryD
 
         return sellHistoryDTOS;
     }
-
-
-
 
     @Override
     public SellHistoryDTO create(SellHistory sellHistory) {

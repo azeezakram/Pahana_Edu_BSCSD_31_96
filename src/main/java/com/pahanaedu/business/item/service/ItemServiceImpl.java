@@ -1,18 +1,15 @@
 package com.pahanaedu.business.item.service;
 
 import com.pahanaedu.business.item.dto.ItemDTO;
-import com.pahanaedu.business.item.util.ItemUtils;
-import com.pahanaedu.common.interfaces.Repository;
-import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.mapper.ItemMapper;
 import com.pahanaedu.business.item.model.Item;
-import com.pahanaedu.common.interfaces.UpdatableService;
+import com.pahanaedu.business.item.util.ItemUtils;
 import com.pahanaedu.persistence.item.ItemRepositoryImpl;
 
 import java.util.List;
 
-public class ItemServiceImpl implements Service<Item, ItemDTO>, UpdatableService<Item, ItemDTO> {
+public class ItemServiceImpl implements ItemService {
 
     private final ItemRepositoryImpl itemIRepository;
 
@@ -38,7 +35,7 @@ public class ItemServiceImpl implements Service<Item, ItemDTO>, UpdatableService
     @Override
     public ItemDTO create(Item item) {
         if (ItemUtils.isInvalid(item)) {
-            throw  new ItemException("Invalid item detail/s provided");
+            throw new ItemException("Invalid item detail/s provided");
         }
 
         Item newItem = itemIRepository.save(item);
@@ -57,6 +54,7 @@ public class ItemServiceImpl implements Service<Item, ItemDTO>, UpdatableService
         return itemIRepository.delete(id);
     }
 
+    @Override
     public void updateStock(ItemDTO item, Integer soldUnit) {
 
         if (item.getId() == null || item.getId() < 1 ||
@@ -64,7 +62,6 @@ public class ItemServiceImpl implements Service<Item, ItemDTO>, UpdatableService
                 soldUnit == null || soldUnit < 0) {
             throw new ItemException("Item id or item stock or sell item unit is null");
         }
-
 
         boolean result = itemIRepository.updateStock(item.getId(), item.getStock() - soldUnit);
 

@@ -1,6 +1,8 @@
 package com.pahanaedu.business.user.module.customer.controller;
 
 import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
+import com.pahanaedu.business.user.module.customer.service.CustomerService;
+import com.pahanaedu.business.user.module.staff.util.StaffUtils;
 import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.business.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.business.user.module.customer.model.Customer;
@@ -16,16 +18,22 @@ import java.util.Map;
 
 @WebServlet("/api/customer/*")
 public class CustomerServlet extends HttpServlet {
-    private CustomerServiceImpl customerService;
+    private CustomerService customerService;
 
     @Override
     public void init() {
         this.customerService = new CustomerServiceImpl();
     }
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         if (pathInfo == null || pathInfo.equals("/")) {
             List<CustomerDTO> customers = customerService.findAll();
@@ -67,9 +75,15 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
@@ -97,10 +111,16 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
@@ -128,10 +148,16 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         if (pathInfo == null || pathInfo.equals("/")) {
             JsonUtil.sendJson(res, Map.of("error", "Customer id or account number required"), HttpServletResponse.SC_NO_CONTENT);

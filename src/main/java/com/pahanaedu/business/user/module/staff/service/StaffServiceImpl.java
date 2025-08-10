@@ -1,31 +1,30 @@
 package com.pahanaedu.business.user.module.staff.service;
 
-import com.pahanaedu.common.interfaces.Service;
+import com.pahanaedu.business.user.module.staff.dto.StaffAuthDTO;
 import com.pahanaedu.business.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.business.user.module.staff.exception.StaffUsernameAlreadyExistException;
 import com.pahanaedu.business.user.module.staff.mapper.StaffMapper;
 import com.pahanaedu.business.user.module.staff.model.Staff;
-import com.pahanaedu.common.interfaces.UpdatableService;
+import com.pahanaedu.persistence.user.staff.StaffRepository;
 import com.pahanaedu.persistence.user.staff.StaffRepositoryImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 import java.util.Objects;
 
-public class StaffServiceImpl implements Service<Staff, StaffWithoutPasswordDTO>, UpdatableService<Staff, StaffWithoutPasswordDTO> {
+public class StaffServiceImpl implements StaffService {
 
-    private final StaffRepositoryImpl staffRepository;
+    private final StaffRepository staffRepository;
 
     public StaffServiceImpl() {
         this.staffRepository = new StaffRepositoryImpl();
     }
 
-
     @Override
     public StaffWithoutPasswordDTO findById(Long id) {
-
         Staff staff = staffRepository.findById(id);
         return staff != null ? StaffMapper.toStaffWithoutPasswordDTO(staff) : null;
-
     }
 
 
@@ -40,11 +39,10 @@ public class StaffServiceImpl implements Service<Staff, StaffWithoutPasswordDTO>
 
     }
 
+    @Override
     public StaffWithoutPasswordDTO findByUsername(String username) {
-
         Staff staff = staffRepository.findByUsername(username);
         return Objects.nonNull(staff) ? StaffMapper.toStaffWithoutPasswordDTO(staff) : null;
-
     }
 
     @Override
@@ -78,4 +76,17 @@ public class StaffServiceImpl implements Service<Staff, StaffWithoutPasswordDTO>
         return staffRepository.delete(id);
     }
 
+    @Override
+    public boolean login(StaffAuthDTO auth, HttpServletRequest req) {
+        Staff staff = staffRepository.findByUsername(auth.username());
+
+        if (staff != null) {
+            if (staff.getPassword().equals(auth.password())) {
+                HttpSession session = req.getSession(true);
+                session.setAttribute("staff", auth.username());
+                return true;
+            }
+        }
+        return false;
+    }
 }

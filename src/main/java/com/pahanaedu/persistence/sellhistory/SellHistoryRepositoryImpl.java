@@ -2,7 +2,7 @@ package com.pahanaedu.persistence.sellhistory;
 
 import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellHistory.util.SellHistoryUtils;
-import com.pahanaedu.common.interfaces.Repository;
+import com.pahanaedu.config.db.factory.DbConnectionFactory;
 import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
+public class SellHistoryRepositoryImpl implements SellHistoryRepository {
 
-    private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
+    private final DbConnectionFactory dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
     public SellHistoryRepositoryImpl() {

@@ -1,9 +1,7 @@
 package com.pahanaedu.persistence.user.customer;
 
-import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.business.user.module.customer.model.Customer;
-import com.pahanaedu.common.interfaces.UpdatableRepository;
 import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
@@ -13,12 +11,12 @@ import java.util.List;
 
 import static com.pahanaedu.business.user.module.customer.util.CustomerUtils.getCustomerByResultSet;
 
-public class CustomerRepositoryImpl implements Repository<Customer>, UpdatableRepository<Customer> {
+public class CustomerRepositoryImpl implements CustomerRepository {
 
     private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
-    public CustomerRepositoryImpl () {
+    public CustomerRepositoryImpl() {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
     }
 

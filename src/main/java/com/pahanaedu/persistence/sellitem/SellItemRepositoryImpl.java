@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellItemRepositoryImpl implements Repository<SellItem> {
+public class SellItemRepositoryImpl implements SellItemRepository {
 
     private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";

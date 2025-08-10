@@ -3,7 +3,9 @@ package com.pahanaedu.business.sellHistory.controller;
 import com.pahanaedu.business.sellHistory.dto.SellHistoryDTO;
 import com.pahanaedu.business.sellHistory.exception.SellHistoryException;
 import com.pahanaedu.business.sellHistory.model.SellHistory;
+import com.pahanaedu.business.sellHistory.service.SellHistoryService;
 import com.pahanaedu.business.sellHistory.service.SellHistoryServiceImpl;
+import com.pahanaedu.business.user.module.staff.util.StaffUtils;
 import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,7 +19,7 @@ import java.util.Map;
 @WebServlet("/api/sell-history/*")
 public class SellHistoryServlet extends HttpServlet {
 
-    private SellHistoryServiceImpl sellHistoryService;
+    private SellHistoryService sellHistoryService;
 
     @Override
     public void init() {
@@ -28,6 +30,12 @@ public class SellHistoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
         String includeItemsParam = req.getParameter("includeItems");
         boolean includeItems = "true".equalsIgnoreCase(includeItemsParam);
 
@@ -80,6 +88,11 @@ public class SellHistoryServlet extends HttpServlet {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
 
@@ -110,6 +123,11 @@ public class SellHistoryServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {

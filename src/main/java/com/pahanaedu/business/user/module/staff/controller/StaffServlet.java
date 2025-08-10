@@ -1,14 +1,18 @@
 package com.pahanaedu.business.user.module.staff.controller;
 
-import com.pahanaedu.common.utill.JsonUtil;
+import com.pahanaedu.business.user.module.staff.dto.StaffAuthDTO;
 import com.pahanaedu.business.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.business.user.module.staff.exception.StaffUsernameAlreadyExistException;
 import com.pahanaedu.business.user.module.staff.model.Staff;
+import com.pahanaedu.business.user.module.staff.service.StaffService;
 import com.pahanaedu.business.user.module.staff.service.StaffServiceImpl;
+import com.pahanaedu.business.user.module.staff.util.StaffUtils;
+import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,16 +20,21 @@ import java.util.Map;
 
 @WebServlet("/api/staff/*")
 public class StaffServlet extends HttpServlet {
-    private StaffServiceImpl staffService;
+    private StaffService staffService;
 
     public void init() {
         this.staffService = new StaffServiceImpl();
     }
 
-
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         if (pathInfo == null || pathInfo.equals("/")) {
             try {
@@ -63,11 +72,18 @@ public class StaffServlet extends HttpServlet {
 
     }
 
-
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!"/login".toLowerCase().equals(pathInfo)) {
+            if (!StaffUtils.isAuthenticated(req, res)) {
+                JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+        }
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
@@ -87,7 +103,38 @@ public class StaffServlet extends HttpServlet {
                 }
 
                 JsonUtil.sendJson(res, Map.of("error", "Staff could not be created"), HttpServletResponse.SC_CONFLICT);
+            } else if (pathInfo.equals("/login")) {
+                if (StaffUtils.isAuthenticated(req, res)) {
+                    JsonUtil.sendJson(res, Map.of("success", "You have already logged in"), HttpServletResponse.SC_OK);
+                    return;
+                }
+                StaffAuthDTO auth = JsonUtil.extract(req, StaffAuthDTO.class);
+
+                if (auth == null ||
+                        auth.username() == null || auth.username().isEmpty() ||
+                        auth.password() == null || auth.password().isEmpty()) {
+
+                    JsonUtil.sendJson(res, Map.of("error", "Username and password required"), HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                boolean isAuthenticated = staffService.login(auth, req);
+
+                if (isAuthenticated) {
+                    JsonUtil.sendJson(res, Map.of("success", "Staff successfully logged in"), HttpServletResponse.SC_OK);
+                } else {
+                    JsonUtil.sendJson(res, Map.of("error", "Incorrect username or password"), HttpServletResponse.SC_UNAUTHORIZED);
+                }
+            } else if (pathInfo.equals("/logout")) {
+                HttpSession session = req.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                    JsonUtil.sendJson(res, Map.of("message", "Logout successful"), HttpServletResponse.SC_OK);
+                } else {
+                    JsonUtil.sendJson(res, Map.of("error", "No active session"), HttpServletResponse.SC_BAD_REQUEST);
+                }
             }
+
         } catch (StaffUsernameAlreadyExistException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
@@ -95,11 +142,16 @@ public class StaffServlet extends HttpServlet {
         }
     }
 
-
+    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         try {
 
@@ -127,9 +179,15 @@ public class StaffServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
@@ -141,7 +199,7 @@ public class StaffServlet extends HttpServlet {
             boolean result = staffService.delete(id);
 
             if (result) {
-                JsonUtil.sendJson(res, Map.of("message","Successfully deleted"), HttpServletResponse.SC_OK);
+                JsonUtil.sendJson(res, Map.of("message", "Successfully deleted"), HttpServletResponse.SC_OK);
             } else {
                 JsonUtil.sendJson(res, Map.of("error", "Staff not found"), HttpServletResponse.SC_NO_CONTENT);
             }

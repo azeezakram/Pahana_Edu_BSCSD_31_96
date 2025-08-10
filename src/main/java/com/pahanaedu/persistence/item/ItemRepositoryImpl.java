@@ -1,10 +1,7 @@
 package com.pahanaedu.persistence.item;
 
-import com.pahanaedu.business.user.enums.Role;
-import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.util.ItemUtils;
-import com.pahanaedu.common.interfaces.UpdatableRepository;
 import com.pahanaedu.config.db.factory.DbConnectionFactory;
 import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
@@ -13,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository<Item> {
+public class ItemRepositoryImpl implements ItemRepository {
 
     private final DbConnectionFactory dbConnectionFactory;
     private static final String DATABASE_TYPE = "production";
@@ -130,20 +127,20 @@ public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository
                 Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
-                statement.setString(1, item.getItemName());
-                statement.setString(2, item.getDescription());
-                statement.setString(3, item.getBrand());
-                statement.setInt(4, item.getStock());
-                statement.setInt(5, item.getCategory().getId());
-                statement.setInt(6, item.getPrice());
-                statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
-                statement.setLong(8, item.getId());
-                result = statement.executeUpdate();
+            statement.setString(1, item.getItemName());
+            statement.setString(2, item.getDescription());
+            statement.setString(3, item.getBrand());
+            statement.setInt(4, item.getStock());
+            statement.setInt(5, item.getCategory().getId());
+            statement.setInt(6, item.getPrice());
+            statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setLong(8, item.getId());
+            result = statement.executeUpdate();
 
-                if (result < 0) {
-                    connection.rollback();
-                    throw new SQLException("Creating item failed, no rows affected.");
-                }
+            if (result < 0) {
+                connection.rollback();
+                throw new SQLException("Creating item failed, no rows affected.");
+            }
 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);

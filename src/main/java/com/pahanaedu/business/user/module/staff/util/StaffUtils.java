@@ -1,6 +1,9 @@
 package com.pahanaedu.business.user.module.staff.util;
 
 import com.pahanaedu.business.user.module.staff.model.Staff;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,6 +42,18 @@ public class StaffUtils {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Hashing algorithm not found.");
         }
+    }
+
+    public static boolean isAuthenticated(HttpServletRequest req, HttpServletResponse res) {
+        HttpSession session = req.getSession(false);
+
+        if (session != null) {
+            String username = (String) session.getAttribute("staff");
+            return username != null;
+        }
+
+        return false;
+
     }
 
 }

@@ -4,21 +4,19 @@ import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
 import com.pahanaedu.business.user.module.customer.exception.CustomerAccountNumberAlreadyExistException;
 import com.pahanaedu.business.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.business.user.module.customer.model.Customer;
-import com.pahanaedu.common.interfaces.Service;
-import com.pahanaedu.common.interfaces.UpdatableService;
+import com.pahanaedu.persistence.user.customer.CustomerRepository;
 import com.pahanaedu.persistence.user.customer.CustomerRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CustomerServiceImpl implements Service<Customer, CustomerDTO>, UpdatableService<Customer, CustomerDTO> {
+public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerRepositoryImpl customerRepository;
+    private final CustomerRepository customerRepository;
 
     public CustomerServiceImpl() {
         this.customerRepository = new CustomerRepositoryImpl();
     }
-
 
     @Override
     public CustomerDTO findById(Long id) {
@@ -44,7 +42,6 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDTO>, Upda
             throw  new CustomerAccountNumberAlreadyExistException("Account number already taken by another customer");
         }
 
-
         Customer newCustomer = customerRepository.save(customer);
         return findById(newCustomer.getId());
     }
@@ -60,9 +57,7 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDTO>, Upda
         if (customer.getAccountNumber() == null || customer.getAccountNumber().isBlank()) {
             customer.setAccountNumber("ph-edu-c-".concat(String.valueOf(customer.getId())));
         }
-
         Customer newCustomer = customerRepository.update(customer);
-
         return findById(newCustomer.getId());
     }
 
@@ -71,11 +66,13 @@ public class CustomerServiceImpl implements Service<Customer, CustomerDTO>, Upda
         return customerRepository.delete(id);
     }
 
+    @Override
     public CustomerDTO findByAccountNumber(String accountNumber) {
         Customer customer = customerRepository.findByAccountNumber(accountNumber);
         return Objects.nonNull(customer) ? CustomerMapper.toCustomerDto(customer) : null;
     }
 
+    @Override
     public boolean deleteByAccountNumber(String accountNumber) {
         return customerRepository.deleteByAccountNumber(accountNumber);
     }

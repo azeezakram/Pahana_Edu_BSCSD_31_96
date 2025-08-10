@@ -3,7 +3,9 @@ package com.pahanaedu.business.item.controller;
 import com.pahanaedu.business.item.dto.ItemDTO;
 import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.model.Item;
+import com.pahanaedu.business.item.service.ItemService;
 import com.pahanaedu.business.item.service.ItemServiceImpl;
+import com.pahanaedu.business.user.module.staff.util.StaffUtils;
 import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,16 +19,21 @@ import java.util.Map;
 @WebServlet("/api/item/*")
 public class ItemServlet extends HttpServlet {
 
-    private ItemServiceImpl itemService;
+    private ItemService itemService;
 
     public void init() {
         this.itemService = new ItemServiceImpl();
     }
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+
+        if (!StaffUtils.isAuthenticated(req, res)) {
+            JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         if (pathInfo == null || pathInfo.equals("/")) {
 
@@ -66,6 +73,7 @@ public class ItemServlet extends HttpServlet {
 
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
@@ -96,6 +104,7 @@ public class ItemServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         res.setContentType("application/json");
@@ -125,6 +134,7 @@ public class ItemServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
