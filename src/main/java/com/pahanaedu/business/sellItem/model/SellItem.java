@@ -1,20 +1,17 @@
 package com.pahanaedu.business.sellItem.model;
 
-import com.pahanaedu.business.item.model.Item;
-import com.pahanaedu.business.sellHistory.model.SellHistory;
-
 public class SellItem {
 
     private Long id;
-    private Item item;
+    private Long itemId;
     private Long sellHistoryId;
     private Integer sellPrice;
     private Integer unit;
     private Integer subTotal;
 
-    public SellItem(Long id, Item item, Long sellHistoryId, Integer sellPrice, Integer unit, Integer subTotal) {
+    public SellItem(Long id, Long itemId, Long sellHistoryId, Integer sellPrice, Integer unit, Integer subTotal) {
         this.id = id;
-        this.item = item;
+        this.itemId = itemId;
         this.sellHistoryId = sellHistoryId;
         this.sellPrice = sellPrice;
         this.unit = unit;
@@ -32,12 +29,12 @@ public class SellItem {
         this.id = id;
     }
 
-    public Item getItem() {
-        return item;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
     public Long getSellHistoryId() {
@@ -76,7 +73,7 @@ public class SellItem {
     public String toString() {
         return "SellItem{" +
                 "id=" + id +
-                ", item=" + item +
+                ", itemId=" + itemId +
                 ", sellHistoryId=" + sellHistoryId +
                 ", sellPrice=" + sellPrice +
                 ", unit=" + unit +

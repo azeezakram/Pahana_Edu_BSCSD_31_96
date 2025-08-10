@@ -5,12 +5,13 @@ import com.pahanaedu.business.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.business.user.module.staff.exception.StaffUsernameAlreadyExistException;
 import com.pahanaedu.business.user.module.staff.mapper.StaffMapper;
 import com.pahanaedu.business.user.module.staff.model.Staff;
+import com.pahanaedu.common.interfaces.UpdatableService;
 import com.pahanaedu.persistence.user.staff.StaffRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
 
-public class StaffServiceImpl implements Service<Staff, StaffWithoutPasswordDTO> {
+public class StaffServiceImpl implements Service<Staff, StaffWithoutPasswordDTO>, UpdatableService<Staff, StaffWithoutPasswordDTO> {
 
     private final StaffRepositoryImpl staffRepository;
 

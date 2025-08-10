@@ -2,9 +2,8 @@ package com.pahanaedu.persistence.sellhistory;
 
 import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellHistory.util.SellHistoryUtils;
-import com.pahanaedu.business.sellItem.model.SellItem;
 import com.pahanaedu.common.interfaces.Repository;
-import com.pahanaedu.config.db.impl.DbConnectionFactory;
+import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -13,32 +12,19 @@ import java.util.List;
 
 public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
 
-    private final DbConnectionFactory dbConnectionFactory;
+    private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
     public SellHistoryRepositoryImpl() {
-        this.dbConnectionFactory = new DbConnectionFactory();
+        this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
     }
 
     @Override
     public SellHistory findById(Long id) {
         SellHistory sellHistory = null;
+        String sellHistoryWithCustomerQuery = "SELECT * FROM sell_history WHERE id = ?";
 
-        String sellHistoryWithCustomerQuery = "SELECT sh.id, sh.customer_id, sh.grand_total, sh.created_at, " +
-                "c.id AS c_id, u.name AS c_name, u.role as c_role, u.created_at as c_created_at, u.updated_at as c_updated_at, c.phone_number, c.address, c.account_number " +
-                "FROM sell_history sh " +
-                "JOIN customer c ON sh.customer_id = c.id " +
-                "JOIN users u ON u.id = c.id " +
-                "WHERE sh.id = ?";
-
-        String sellItemQuery = "SELECT si.id AS si_id, si.sell_history_id, si.sell_price, si.unit, si.subtotal, " +
-                "i.id AS i_id, i.item_name, i.description, cat.id as i_category_id, cat.category_name as i_category_name, i.brand, i.price, i.stock, i.created_at as i_created_at, i.updated_at as i_updated_at " +
-                "FROM sell_item si " +
-                "JOIN item i ON si.item_id = i.id " +
-                "join category cat on cat.id = i.category_id " +
-                "WHERE si.sell_history_id = ?";
-
-        try (Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)) {
+        try (Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)) {
 
             try (PreparedStatement statement = connection.prepareStatement(sellHistoryWithCustomerQuery)) {
                 statement.setLong(1, id);
@@ -46,22 +32,6 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
 
                 if (resultSet.next()) {
                     sellHistory = SellHistoryUtils.getSellHistoryByResultSet(resultSet);
-                }
-            }
-
-            if (sellHistory != null) {
-
-                List<SellItem> sellItems = new ArrayList<>();
-
-                try (PreparedStatement statement = connection.prepareStatement(sellItemQuery)) {
-                    statement.setLong(1, id);
-                    ResultSet resultSet = statement.executeQuery();
-
-                    while (resultSet.next()) {
-                        SellItem sellItem = SellHistoryUtils.getSellItemByResultSet(resultSet);
-                        sellItems.add(sellItem);
-                    }
-                    sellHistory.setSellItems(sellItems);
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -75,42 +45,14 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
     public List<SellHistory> findAll() {
         List<SellHistory> sellHistories = new ArrayList<>();
 
-        String sellHistoryWithCustomerQuery = "SELECT sh.id, sh.customer_id, sh.grand_total, sh.created_at, " +
-                "c.id AS c_id, u.name AS c_name, u.role as c_role, u.created_at as c_created_at, u.updated_at as c_updated_at, c.phone_number, c.address, c.account_number " +
-                "FROM sell_history sh " +
-                "JOIN customer c ON sh.customer_id = c.id " +
-                "JOIN users u ON u.id = c.id ";
+        String sellHistoryWithCustomerQuery = "SELECT * FROM sell_history";
 
-        String sellItemQuery = "SELECT si.id AS si_id, si.sell_history_id, si.sell_price, si.unit, si.subtotal, " +
-                "i.id AS i_id, i.item_name, i.description, cat.id as i_category_id, cat.category_name as i_category_name, i.brand, i.price, i.stock, i.created_at as i_created_at, i.updated_at as i_updated_at " +
-                "FROM sell_item si " +
-                "JOIN item i ON si.item_id = i.id " +
-                "join category cat on cat.id = i.category_id " +
-                "where si.sell_history_id = ?";
-
-        try (Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)) {
-            ResultSet sellHistoryWithCustomerResult;
-            ResultSet sellItemResult;
-
+        try (Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)) {
             try (PreparedStatement statement = connection.prepareStatement(sellHistoryWithCustomerQuery)) {
-                sellHistoryWithCustomerResult = statement.executeQuery();
-
+                ResultSet sellHistoryWithCustomerResult = statement.executeQuery();
                 while (sellHistoryWithCustomerResult.next()) {
 
                     SellHistory sellHistory = SellHistoryUtils.getSellHistoryByResultSet(sellHistoryWithCustomerResult);
-
-                    try (PreparedStatement statement2 = connection.prepareStatement(sellItemQuery)) {
-                        statement2.setLong(1, sellHistory.getId());
-                        sellItemResult = statement2.executeQuery();
-
-                        List<SellItem> sellItems = new ArrayList<>();
-
-                        while (sellItemResult.next()) {
-                            SellItem sellItem = SellHistoryUtils.getSellItemByResultSet(sellItemResult);
-                            sellItems.add(sellItem);
-                        }
-                        sellHistory.setSellItems(sellItems);
-                    }
                     sellHistories.add(sellHistory);
                 }
             }
@@ -132,19 +74,14 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
                     values (?, ?, ?)
                 """;
 
-        String newSellItemQuery = """
-                    insert into sell_item(sell_history_id, item_id, sell_price, unit, subtotal)
-                    values (?, ?, ?, ?, ?)
-                """;
-
         System.out.println(sellHistory);
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)
         ) {
 
             try (PreparedStatement statement = connection.prepareStatement(newSellHistoryQuery, Statement.RETURN_GENERATED_KEYS)) {
-                statement.setLong(1, sellHistory.getCustomer().getId());
+                statement.setLong(1, sellHistory.getCustomerId());
                 statement.setInt(2, sellHistory.getGrandTotal());
                 statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 result = statement.executeUpdate();
@@ -160,21 +97,6 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
                     throw new SQLException("Creating sell history failed, no rows affected.");
                 }
 
-                try (PreparedStatement statement2 = connection.prepareStatement(newSellItemQuery, Statement.RETURN_GENERATED_KEYS)) {
-                    for (SellItem sellItem : sellHistory.getSellItems()) {
-                        statement2.setLong(1, generatedId);
-                        statement2.setLong(2, sellItem.getItem().getId());
-                        statement2.setInt(3, sellItem.getSellPrice());
-                        statement2.setInt(4, sellItem.getUnit());
-                        statement2.setInt(5, sellItem.getSubTotal());
-                        result = statement2.executeUpdate();
-
-                        if (result < 0) {
-                            connection.rollback();
-                            throw new SQLException("Creating sell item failed, no rows affected.");
-                        }
-                    }
-                }
             }
 
             sellHistory.setId(generatedId);
@@ -187,44 +109,25 @@ public class SellHistoryRepositoryImpl implements Repository<SellHistory> {
     }
 
     @Override
-    public SellHistory update(SellHistory obj) {
-        return null;
-    }
-
-    @Override
     public boolean delete(Long id) {
-        boolean isDeleted = false;
-        String sellItemsQuery = "delete from sell_item where sell_history_id = ?";
-        String sellHistoryQuery = "delete from sell_history where id = ?";
+        String sellHistoryQuery = "DELETE FROM sell_history WHERE id = ?";
 
-        try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
-        ) {
-            connection.setAutoCommit(false);
+        try (Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+             PreparedStatement statement = connection.prepareStatement(sellHistoryQuery)) {
 
-            try (PreparedStatement statement1 = connection.prepareStatement(sellItemsQuery)) {
-                statement1.setLong(1, id);
-                statement1.executeUpdate();
+            statement.setLong(1, id);
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected == 0) {
+                return false;
             }
 
-            try (PreparedStatement statement2 = connection.prepareStatement(sellHistoryQuery)) {
-                statement2.setLong(1, id);
-                int result = statement2.executeUpdate();
-
-                if (result == 0) {
-                    connection.rollback();
-                    throw new SQLException("No sell history found with id: " + id);
-                }
-            }
-
-            connection.commit();
-            isDeleted = true;
+            return true;
 
         } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to delete sell history with id: " + id, e);
         }
-
-        return isDeleted;
     }
+
 
 }

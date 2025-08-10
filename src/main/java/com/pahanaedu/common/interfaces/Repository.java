@@ -2,12 +2,11 @@ package com.pahanaedu.common.interfaces;
 
 import java.util.List;
 
-public interface Repository<R> {
+public interface Repository<T> {
 
-    R findById(Long id);
-    List<R> findAll();
-    R save(R obj);
-    R update(R obj);
+    T findById(Long id);
+    List<T> findAll();
+    T save(T obj);
     boolean delete(Long id);
 
 }

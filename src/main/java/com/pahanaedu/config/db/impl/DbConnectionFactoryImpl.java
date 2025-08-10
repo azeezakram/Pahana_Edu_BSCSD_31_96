@@ -2,12 +2,13 @@ package com.pahanaedu.config.db.impl;
 
 import com.pahanaedu.config.db.exception.DatabaseConnectionException;
 import com.pahanaedu.config.db.factory.DbConnection;
+import com.pahanaedu.config.db.factory.DbConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DbConnectionFactory implements com.pahanaedu.config.db.factory.DbConnectionFactory {
+public class DbConnectionFactoryImpl implements DbConnectionFactory {
     @Override
     public Connection getConnection(String dbType) throws ClassNotFoundException {
 

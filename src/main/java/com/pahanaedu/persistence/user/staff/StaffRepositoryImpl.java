@@ -4,7 +4,8 @@ import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.business.user.module.staff.model.Staff;
 import com.pahanaedu.business.user.module.staff.util.StaffUtils;
-import com.pahanaedu.config.db.impl.DbConnectionFactory;
+import com.pahanaedu.common.interfaces.UpdatableRepository;
+import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -13,13 +14,13 @@ import java.util.List;
 
 import static com.pahanaedu.business.user.module.staff.util.StaffUtils.getStaffByResultSet;
 
-public class StaffRepositoryImpl implements Repository<Staff> {
+public class StaffRepositoryImpl implements Repository<Staff>, UpdatableRepository<Staff> {
 
-    private final DbConnectionFactory dbConnectionFactory;
+    private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
     public StaffRepositoryImpl () {
-        this.dbConnectionFactory = new DbConnectionFactory();
+        this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
     }
 
     @Override
@@ -29,7 +30,7 @@ public class StaffRepositoryImpl implements Repository<Staff> {
         String query = "select * from staff s join users u on s.id = u.id where s.id=? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setInt(1, id.intValue());
@@ -55,7 +56,7 @@ public class StaffRepositoryImpl implements Repository<Staff> {
         String query = "select * from staff s join users u on u.id = s.id where u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, Role.STAFF.toString());
@@ -88,7 +89,7 @@ public class StaffRepositoryImpl implements Repository<Staff> {
                 """;
         System.out.println(staff);
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
@@ -133,6 +134,7 @@ public class StaffRepositoryImpl implements Repository<Staff> {
 
     }
 
+    @Override
     public Staff update(Staff staff) {
 
         int result;
@@ -150,7 +152,7 @@ public class StaffRepositoryImpl implements Repository<Staff> {
                 """;
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
@@ -181,14 +183,13 @@ public class StaffRepositoryImpl implements Repository<Staff> {
 
     }
 
-
     @Override
     public boolean delete(Long id) {
         boolean isDeleted;
         String query = "DELETE FROM users WHERE id = ? and role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
@@ -203,14 +204,13 @@ public class StaffRepositoryImpl implements Repository<Staff> {
         return isDeleted;
     }
 
-
     public Staff findByUsername(String username) {
 
         Staff staff = null;
         String query = "select * from staff s join users u on s.id = u.id where s.username=? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, username);

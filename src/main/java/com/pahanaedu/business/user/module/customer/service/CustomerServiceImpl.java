@@ -5,12 +5,13 @@ import com.pahanaedu.business.user.module.customer.exception.CustomerAccountNumb
 import com.pahanaedu.business.user.module.customer.mapper.CustomerMapper;
 import com.pahanaedu.business.user.module.customer.model.Customer;
 import com.pahanaedu.common.interfaces.Service;
+import com.pahanaedu.common.interfaces.UpdatableService;
 import com.pahanaedu.persistence.user.customer.CustomerRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CustomerServiceImpl implements Service<Customer, CustomerDTO> {
+public class CustomerServiceImpl implements Service<Customer, CustomerDTO>, UpdatableService<Customer, CustomerDTO> {
 
     private final CustomerRepositoryImpl customerRepository;
 

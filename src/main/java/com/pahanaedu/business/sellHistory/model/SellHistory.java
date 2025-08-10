@@ -9,21 +9,21 @@ import java.util.List;
 public class SellHistory {
 
     private Long id;
-    private Customer customer;
+    private Long customer_id;
     private List<SellItem> sellItems;
     private Integer grandTotal;
     private LocalDateTime createdAt;
 
-    public SellHistory(Long id, Customer customer, List<SellItem> sellItems, Integer grandTotal, LocalDateTime createdAt) {
+    public SellHistory(Long id, Long customer_id, List<SellItem> sellItems, Integer grandTotal, LocalDateTime createdAt) {
         this.id = id;
-        this.customer = customer;
+        this.customer_id = customer_id;
         this.sellItems = sellItems;
         this.grandTotal = grandTotal;
         this.createdAt = createdAt;
     }
 
-    public SellHistory(Customer customer, List<SellItem> sellItems, Integer grandTotal, LocalDateTime createdAt) {
-        this.customer = customer;
+    public SellHistory(Long customer_id, List<SellItem> sellItems, Integer grandTotal, LocalDateTime createdAt) {
+        this.customer_id = customer_id;
         this.sellItems = sellItems;
         this.grandTotal = grandTotal;
         this.createdAt = createdAt;
@@ -40,12 +40,12 @@ public class SellHistory {
         this.id = id;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getCustomerId() {
+        return customer_id;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomerId(Long customer_id) {
+        this.customer_id = customer_id;
     }
 
     public List<SellItem> getSellItems() {
@@ -76,6 +76,7 @@ public class SellHistory {
     public String toString() {
         return "SellHistory{" +
                 "id=" + id +
+                ", customer_id=" + customer_id +
                 ", sellItems=" + sellItems +
                 ", grandTotal=" + grandTotal +
                 ", createdAt=" + createdAt +

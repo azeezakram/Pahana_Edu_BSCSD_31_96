@@ -1,17 +1,18 @@
 package com.pahanaedu.business.item.service;
 
 import com.pahanaedu.business.item.dto.ItemDTO;
-import com.pahanaedu.business.item.util.ItemUtils;
-import com.pahanaedu.common.interfaces.Repository;
-import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.mapper.ItemMapper;
 import com.pahanaedu.business.item.model.Item;
+import com.pahanaedu.business.item.util.ItemUtils;
+import com.pahanaedu.common.interfaces.Service;
+import com.pahanaedu.common.interfaces.UpdatableService;
 import com.pahanaedu.persistence.item.ItemRepositoryImpl;
 
 import java.util.List;
+import java.util.function.Function;
 
-public class ItemServiceImpl implements Service<Item, ItemDTO> {
+public class ItemServiceImpl implements Service<Item, ItemDTO>, UpdatableService<Item, ItemDTO> {
 
     private final ItemRepositoryImpl itemIRepository;
 
@@ -39,7 +40,6 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
         if (ItemUtils.isInvalid(item)) {
             throw  new ItemException("Invalid item detail/s provided");
         }
-
         Item newItem = itemIRepository.save(item);
         return findById(newItem.getId());
     }
@@ -47,7 +47,6 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
     @Override
     public ItemDTO update(Item item) {
         Item updatedItem = itemIRepository.update(item);
-
         return findById(updatedItem.getId());
     }
 
@@ -57,17 +56,12 @@ public class ItemServiceImpl implements Service<Item, ItemDTO> {
     }
 
     public void updateStock(Long itemId, Integer itemCurrentStock, Integer soldUnit) {
-
-        if (itemId == null || itemId < 1 ||
-                itemCurrentStock == null || itemCurrentStock < 0 ||
-                soldUnit == null || soldUnit < 0) {
-            throw new ItemException("Problem in updating stock");
-        }
-
-        boolean result = itemIRepository.updateStock(itemId, itemCurrentStock - soldUnit);
-
-        if (!result){
-            throw new ItemException("Stock update couldn't be done, try again");
+        ItemUtils.stockValidation(itemId, itemCurrentStock, soldUnit);
+        int updatedStock = itemCurrentStock - soldUnit;
+        boolean result = itemIRepository.updateStock(itemId, updatedStock);
+        if (!result) {
+            throw new ItemException("Stock update failed, please try again");
         }
     }
+
 }

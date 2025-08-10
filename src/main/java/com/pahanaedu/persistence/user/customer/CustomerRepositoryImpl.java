@@ -3,7 +3,8 @@ package com.pahanaedu.persistence.user.customer;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.business.user.module.customer.model.Customer;
-import com.pahanaedu.config.db.impl.DbConnectionFactory;
+import com.pahanaedu.common.interfaces.UpdatableRepository;
+import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,13 +13,13 @@ import java.util.List;
 
 import static com.pahanaedu.business.user.module.customer.util.CustomerUtils.getCustomerByResultSet;
 
-public class CustomerRepositoryImpl implements Repository<Customer> {
+public class CustomerRepositoryImpl implements Repository<Customer>, UpdatableRepository<Customer> {
 
-    private final DbConnectionFactory dbConnectionFactory;
+    private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
     public CustomerRepositoryImpl () {
-        this.dbConnectionFactory = new DbConnectionFactory();
+        this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
     }
 
     @Override
@@ -27,7 +28,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
         String query = "select * from customer c join users u on c.id = u.id where c.id=? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setInt(1, id.intValue());
@@ -52,7 +53,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
         String query = "select * from customer c join users u on u.id = c.id where u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, Role.CUSTOMER.toString());
@@ -85,7 +86,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
                 """;
         System.out.println(customer);
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
@@ -148,7 +149,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
                 """;
         System.out.println(customer);
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE)
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE)
         ) {
             connection.setAutoCommit(false);
 
@@ -190,7 +191,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
         String query = "delete from users where id = ? and role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setLong(1, id);
@@ -214,7 +215,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
         String query = "select * from customer c join users u on c.id = u.id where c.account_number = ? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, accountNumber);
@@ -238,7 +239,7 @@ public class CustomerRepositoryImpl implements Repository<Customer> {
         String query = "delete from users u using customer c where u.id = c.id and c.account_number = ? and u.role=?";
 
         try (
-                Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, accountNumber);

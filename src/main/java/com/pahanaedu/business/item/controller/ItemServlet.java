@@ -1,16 +1,14 @@
 package com.pahanaedu.business.item.controller;
 
 import com.pahanaedu.business.item.dto.ItemDTO;
-import com.pahanaedu.common.interfaces.Service;
-import com.pahanaedu.common.utill.JsonUtil;
 import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.service.ItemServiceImpl;
+import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.Map;
 @WebServlet("/api/item/*")
 public class ItemServlet extends HttpServlet {
 
-    private Service<Item, ItemDTO> itemService;
+    private ItemServiceImpl itemService;
 
     public void init() {
         this.itemService = new ItemServiceImpl();
@@ -60,7 +58,7 @@ public class ItemServlet extends HttpServlet {
 
             JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NOT_FOUND);
 
-        }catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             JsonUtil.sendJson(res, Map.of("error", "Invalid item id"), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -141,7 +139,7 @@ public class ItemServlet extends HttpServlet {
             boolean result = itemService.delete(id);
 
             if (result) {
-                JsonUtil.sendJson(res, Map.of("message","Successfully deleted"), HttpServletResponse.SC_OK);
+                JsonUtil.sendJson(res, Map.of("message", "Successfully deleted"), HttpServletResponse.SC_OK);
             } else {
                 JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NOT_FOUND);
             }

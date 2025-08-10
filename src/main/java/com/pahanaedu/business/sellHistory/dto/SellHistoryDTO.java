@@ -46,6 +46,17 @@ public class SellHistoryDTO {
         return createdAt;
     }
 
+    @Override
+    public String toString() {
+        return "SellHistoryDTO{" +
+                "id=" + id +
+                ", customer=" + customer +
+                ", sellItems=" + sellItems +
+                ", grandTotal=" + grandTotal +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
     public static class Builder {
         private Long id;
         private CustomerDTO customer;

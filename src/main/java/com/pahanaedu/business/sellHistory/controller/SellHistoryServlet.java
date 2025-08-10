@@ -1,8 +1,5 @@
 package com.pahanaedu.business.sellHistory.controller;
 
-import com.pahanaedu.business.item.dto.ItemDTO;
-import com.pahanaedu.business.item.exception.ItemException;
-import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.sellHistory.dto.SellHistoryDTO;
 import com.pahanaedu.business.sellHistory.exception.SellHistoryException;
 import com.pahanaedu.business.sellHistory.model.SellHistory;
@@ -27,25 +24,41 @@ public class SellHistoryServlet extends HttpServlet {
         this.sellHistoryService = new SellHistoryServiceImpl();
     }
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
+        String includeItemsParam = req.getParameter("includeItems");
+        boolean includeItems = "true".equalsIgnoreCase(includeItemsParam);
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            List<SellHistoryDTO> sellHistories = sellHistoryService.findAll();
+            List<SellHistoryDTO> sellHistories;
 
-            if (sellHistories != null) {
+            if (includeItems) {
+                sellHistories = sellHistoryService.findAllWithItems();
+            } else {
+                sellHistories = sellHistoryService.findAll();
+            }
+
+            if (sellHistories != null && !sellHistories.isEmpty()) {
                 JsonUtil.sendJson(res, sellHistories, HttpServletResponse.SC_OK);
                 return;
             }
 
             JsonUtil.sendJson(res, Map.of("error", "Sell history/s not found"), HttpServletResponse.SC_NOT_FOUND);
             return;
+
         }
 
         try {
             Long id = Long.parseLong(pathInfo.substring(1));
-            SellHistoryDTO sellHistoryDTO = sellHistoryService.findById(id);
+
+            SellHistoryDTO sellHistoryDTO;
+            if (includeItems) {
+                sellHistoryDTO = sellHistoryService.findByIdWithItems(id);
+            } else {
+                sellHistoryDTO = sellHistoryService.findById(id);
+            }
 
             if (sellHistoryDTO != null) {
                 JsonUtil.sendJson(res, sellHistoryDTO, HttpServletResponse.SC_OK);
@@ -58,7 +71,6 @@ public class SellHistoryServlet extends HttpServlet {
             JsonUtil.sendJson(res, Map.of("error", "Invalid sell history id"), HttpServletResponse.SC_NOT_FOUND);
 
         } catch (Exception e) {
-            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -90,6 +102,7 @@ public class SellHistoryServlet extends HttpServlet {
         } catch (SellHistoryException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
+            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -109,7 +122,7 @@ public class SellHistoryServlet extends HttpServlet {
             boolean result = sellHistoryService.delete(id);
 
             if (result) {
-                JsonUtil.sendJson(res, Map.of("message","Successfully deleted sell history ID: " + id
+                JsonUtil.sendJson(res, Map.of("message", "Successfully deleted sell history ID: " + id
                 ), HttpServletResponse.SC_OK);
             } else {
                 JsonUtil.sendJson(res, Map.of("error", "Not found sell history ID: " + id), HttpServletResponse.SC_NOT_FOUND);

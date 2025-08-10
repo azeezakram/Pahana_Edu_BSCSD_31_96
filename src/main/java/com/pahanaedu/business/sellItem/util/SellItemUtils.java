@@ -13,7 +13,7 @@ public class SellItemUtils {
     public static SellItem getSellItemByResultSet(ResultSet result) throws SQLException {
         return new SellItem(
                 result.getLong("id"),
-                ItemUtils.getItemByResultSet(result),
+                result.getLong("item_id"),
                 result.getLong("sell_history_id"),
                 result.getInt("sell_price"),
                 result.getInt("unit"),
