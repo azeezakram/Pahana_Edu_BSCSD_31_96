@@ -1,31 +1,30 @@
 package com.pahanaedu.business.sellItem.service;
 
 import com.pahanaedu.business.item.dto.ItemDTO;
-import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.service.ItemServiceImpl;
 import com.pahanaedu.business.sellHistory.model.SellHistory;
 import com.pahanaedu.business.sellItem.dto.SellItemDTO;
 import com.pahanaedu.business.sellItem.mapper.SellItemMapper;
 import com.pahanaedu.business.sellItem.model.SellItem;
 import com.pahanaedu.common.interfaces.Service;
-import com.pahanaedu.persistence.sellitem.SellItemRepository;
+import com.pahanaedu.persistence.sellitem.SellItemRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SellItemServiceImpl implements Service<SellItem, SellItemDTO> {
 
-    private final SellItemRepository sellItemRepository;
+    private final SellItemRepositoryImpl sellItemRepositoryImpl;
     private final ItemServiceImpl itemService;
 
     public SellItemServiceImpl() {
-        this.sellItemRepository = new SellItemRepository();
+        this.sellItemRepositoryImpl = new SellItemRepositoryImpl();
         this.itemService = new ItemServiceImpl();
     }
 
     @Override
     public SellItemDTO findById(Long id) {
-        SellItem sellItem = sellItemRepository.findById(id);
+        SellItem sellItem = sellItemRepositoryImpl.findById(id);
         ItemDTO item = null;
 
         if (sellItem != null) {
@@ -37,7 +36,7 @@ public class SellItemServiceImpl implements Service<SellItem, SellItemDTO> {
 
     public List<SellItemDTO> findBySellHistoryId(Long sellHistoryId) {
         List<SellItemDTO> sellItemDTOS = new ArrayList<>();
-        List<SellItem> sellItems = sellItemRepository.findBySellHistoryId(sellHistoryId);
+        List<SellItem> sellItems = sellItemRepositoryImpl.findBySellHistoryId(sellHistoryId);
         sellItems.forEach(System.out::println);
 
         if (!sellItems.isEmpty()) {
@@ -63,11 +62,11 @@ public class SellItemServiceImpl implements Service<SellItem, SellItemDTO> {
     }
 
     public void createBySellHistory(SellHistory sellHistory) {
-        sellItemRepository.saveBySellHistory(sellHistory);
+        sellItemRepositoryImpl.saveBySellHistory(sellHistory);
     }
 
     @Override
     public boolean delete(Long id) {
-        return sellItemRepository.delete(id);
+        return sellItemRepositoryImpl.delete(id);
     }
 }

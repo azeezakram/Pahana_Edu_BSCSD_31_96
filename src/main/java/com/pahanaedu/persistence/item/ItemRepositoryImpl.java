@@ -4,20 +4,22 @@ import com.pahanaedu.business.user.enums.Role;
 import com.pahanaedu.common.interfaces.Repository;
 import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.util.ItemUtils;
-import com.pahanaedu.config.db.impl.DbConnectionFactory;
+import com.pahanaedu.common.interfaces.UpdatableRepository;
+import com.pahanaedu.config.db.factory.DbConnectionFactory;
+import com.pahanaedu.config.db.impl.DbConnectionFactoryImpl;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemRepositoryImpl implements Repository<Item> {
+public class ItemRepositoryImpl implements Repository<Item>, UpdatableRepository<Item> {
 
     private final DbConnectionFactory dbConnectionFactory;
     private static final String DATABASE_TYPE = "production";
 
     public ItemRepositoryImpl() {
-        this.dbConnectionFactory = new DbConnectionFactory();
+        this.dbConnectionFactory = new DbConnectionFactoryImpl();
     }
 
     @Override

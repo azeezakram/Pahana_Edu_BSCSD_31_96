@@ -35,7 +35,7 @@ public class CustomerServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Customers not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customers not found"), HttpServletResponse.SC_NO_CONTENT);
             return;
         }
 
@@ -48,7 +48,7 @@ public class CustomerServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
 
@@ -60,7 +60,7 @@ public class CustomerServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -119,7 +119,7 @@ public class CustomerServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, Map.of("error", "Customer you are trying update not found"), HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Customer you are trying update not found"), HttpServletResponse.SC_NO_CONTENT);
             }
         } catch (CustomerAccountNumberAlreadyExistException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
@@ -134,7 +134,7 @@ public class CustomerServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            JsonUtil.sendJson(res, Map.of("error", "Customer id or account number required"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer id or account number required"), HttpServletResponse.SC_NO_CONTENT);
             return;
         }
 
@@ -147,7 +147,7 @@ public class CustomerServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
 
@@ -159,7 +159,7 @@ public class CustomerServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

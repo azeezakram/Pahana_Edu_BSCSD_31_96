@@ -86,7 +86,7 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, Map.of("error", "Staff could not be created"), HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Staff could not be created"), HttpServletResponse.SC_CONFLICT);
             }
         } catch (StaffUsernameAlreadyExistException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
@@ -143,7 +143,7 @@ public class StaffServlet extends HttpServlet {
             if (result) {
                 JsonUtil.sendJson(res, Map.of("message","Successfully deleted"), HttpServletResponse.SC_OK);
             } else {
-                JsonUtil.sendJson(res, Map.of("error", "Staff not found"), HttpServletResponse.SC_NOT_FOUND);
+                JsonUtil.sendJson(res, Map.of("error", "Staff not found"), HttpServletResponse.SC_NO_CONTENT);
             }
 
         } catch (NumberFormatException e) {

@@ -42,7 +42,7 @@ public class ItemServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NO_CONTENT);
             return;
         }
 
@@ -56,7 +56,7 @@ public class ItemServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NOT_FOUND);
+            JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
             JsonUtil.sendJson(res, Map.of("error", "Invalid item id"), HttpServletResponse.SC_BAD_REQUEST);
@@ -118,7 +118,7 @@ public class ItemServlet extends HttpServlet {
                     return;
                 }
 
-                JsonUtil.sendJson(res, Map.of("error", "Item you are trying update not found"), HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Item you are trying update not found"), HttpServletResponse.SC_NO_CONTENT);
             }
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -141,7 +141,7 @@ public class ItemServlet extends HttpServlet {
             if (result) {
                 JsonUtil.sendJson(res, Map.of("message", "Successfully deleted"), HttpServletResponse.SC_OK);
             } else {
-                JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NOT_FOUND);
+                JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NO_CONTENT);
             }
 
         } catch (NumberFormatException e) {

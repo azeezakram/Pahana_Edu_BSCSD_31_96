@@ -10,12 +10,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SellItemRepository implements Repository<SellItem> {
+public class SellItemRepositoryImpl implements Repository<SellItem> {
 
     private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
-    public SellItemRepository() {
+    public SellItemRepositoryImpl() {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
     }
 

@@ -7,11 +7,12 @@ import com.pahanaedu.common.interfaces.Service;
 import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.mapper.ItemMapper;
 import com.pahanaedu.business.item.model.Item;
+import com.pahanaedu.common.interfaces.UpdatableService;
 import com.pahanaedu.persistence.item.ItemRepositoryImpl;
 
 import java.util.List;
 
-public class ItemServiceImpl implements Service<Item, ItemDTO> {
+public class ItemServiceImpl implements Service<Item, ItemDTO>, UpdatableService<Item, ItemDTO> {
 
     private final ItemRepositoryImpl itemIRepository;
 
