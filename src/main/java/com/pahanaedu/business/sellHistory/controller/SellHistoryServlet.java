@@ -31,7 +31,7 @@ public class SellHistoryServlet extends HttpServlet {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
-        if (!StaffUtils.isAuthenticated(req, res)) {
+        if (!StaffUtils.isAuthenticated(req)) {
             JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -88,7 +88,7 @@ public class SellHistoryServlet extends HttpServlet {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
-        if (!StaffUtils.isAuthenticated(req, res)) {
+        if (!StaffUtils.isAuthenticated(req)) {
             JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -124,7 +124,7 @@ public class SellHistoryServlet extends HttpServlet {
         res.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
-        if (!StaffUtils.isAuthenticated(req, res)) {
+        if (!StaffUtils.isAuthenticated(req)) {
             JsonUtil.sendJson(res, Map.of("error", "Unauthorized - please login"), HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

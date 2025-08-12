@@ -5,6 +5,7 @@ import com.pahanaedu.business.user.module.staff.dto.StaffWithoutPasswordDTO;
 import com.pahanaedu.business.user.module.staff.exception.StaffUsernameAlreadyExistException;
 import com.pahanaedu.business.user.module.staff.mapper.StaffMapper;
 import com.pahanaedu.business.user.module.staff.model.Staff;
+import com.pahanaedu.business.user.module.staff.util.StaffUtils;
 import com.pahanaedu.persistence.user.staff.StaffRepository;
 import com.pahanaedu.persistence.user.staff.StaffRepositoryImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -81,7 +82,8 @@ public class StaffServiceImpl implements StaffService {
         Staff staff = staffRepository.findByUsername(auth.username());
 
         if (staff != null) {
-            if (staff.getPassword().equals(auth.password())) {
+            String hashedPassword = StaffUtils.hashPassword(auth.password());
+            if (staff.getPassword().equals(hashedPassword)) {
                 HttpSession session = req.getSession(true);
                 session.setAttribute("staff", auth.username());
                 return true;

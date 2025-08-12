@@ -2,7 +2,6 @@ package com.pahanaedu.business.user.module.staff.util;
 
 import com.pahanaedu.business.user.module.staff.model.Staff;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.security.MessageDigest;
@@ -44,7 +43,7 @@ public class StaffUtils {
         }
     }
 
-    public static boolean isAuthenticated(HttpServletRequest req, HttpServletResponse res) {
+    public static boolean isAuthenticated(HttpServletRequest req) {
         HttpSession session = req.getSession(false);
 
         if (session != null) {
