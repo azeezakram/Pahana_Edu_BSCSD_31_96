@@ -7,7 +7,7 @@ A lightweight and efficient billing system designed to manage sales, customers, 
 ## 📌 Features
 
 - **Sell History Management**  
-  Create, read, and manage detailed sell history records along with associated sell items.
+  Create, read, and manage detailed sell history records along with associated sell categories.
 
 - **Customer Management**  
   Store and retrieve customer details to maintain accurate customer information.

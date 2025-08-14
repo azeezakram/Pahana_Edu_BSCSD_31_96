@@ -1,0 +1,75 @@
+package com.pahanaedu.business.salesItem.service;
+
+import com.pahanaedu.business.item.dto.ItemDTO;
+import com.pahanaedu.business.item.service.ItemService;
+import com.pahanaedu.business.item.service.ItemServiceImpl;
+import com.pahanaedu.business.salesItem.dto.SalesItemDTO;
+import com.pahanaedu.business.saleshistory.model.SalesHistory;
+import com.pahanaedu.business.salesItem.mapper.SalesItemMapper;
+import com.pahanaedu.business.salesItem.model.SalesItem;
+import com.pahanaedu.persistence.salesitem.SalesItemRepository;
+import com.pahanaedu.persistence.salesitem.SalesItemRepositoryImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SalesItemServiceImpl implements SalesItemService {
+
+    private final SalesItemRepository salesItemRepository;
+    private final ItemService itemService;
+
+    public SalesItemServiceImpl() {
+        this.salesItemRepository = new SalesItemRepositoryImpl();
+        this.itemService = new ItemServiceImpl();
+    }
+
+    @Override
+    public SalesItemDTO findById(Long id) {
+        SalesItem salesItem = salesItemRepository.findById(id);
+        ItemDTO item = null;
+
+        if (salesItem != null) {
+            item = itemService.findById(salesItem.getItemId());
+        }
+
+        return salesItem != null ? SalesItemMapper.toSalesItemDTO(salesItem, item) : null;
+    }
+
+    @Override
+    public List<SalesItemDTO> findBySellHistoryId(Long sellHistoryId) {
+        List<SalesItemDTO> salesItemDTOS = new ArrayList<>();
+        List<SalesItem> sellItems = salesItemRepository.findBySellHistoryId(sellHistoryId);
+        sellItems.forEach(System.out::println);
+
+        if (!sellItems.isEmpty()) {
+            for (SalesItem salesItem : sellItems) {
+                if (salesItem != null) {
+                    ItemDTO itemDTO = itemService.findById(salesItem.getItemId());
+                    salesItemDTOS.add(SalesItemMapper.toSalesItemDTO(salesItem, itemDTO));
+                }
+            }
+        }
+
+        return salesItemDTOS;
+    }
+
+    @Override
+    public List<SalesItemDTO> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public SalesItemDTO create(SalesItem obj) {
+        return null;
+    }
+
+    @Override
+    public void createBySellHistory(SalesHistory salesHistory) {
+        salesItemRepository.saveBySellHistory(salesHistory);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        return salesItemRepository.delete(id);
+    }
+}

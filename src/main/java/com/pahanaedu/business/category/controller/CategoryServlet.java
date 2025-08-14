@@ -1,10 +1,11 @@
-package com.pahanaedu.business.item.controller;
+package com.pahanaedu.business.category.controller;
 
+import com.pahanaedu.business.category.dto.CategoryDTO;
+import com.pahanaedu.business.category.model.Category;
+import com.pahanaedu.business.category.service.CategoryService;
+import com.pahanaedu.business.category.service.CategoryServiceImpl;
 import com.pahanaedu.business.item.dto.ItemDTO;
 import com.pahanaedu.business.item.exception.ItemException;
-import com.pahanaedu.business.item.model.Item;
-import com.pahanaedu.business.item.service.ItemService;
-import com.pahanaedu.business.item.service.ItemServiceImpl;
 import com.pahanaedu.business.user.module.staff.util.StaffUtils;
 import com.pahanaedu.common.utill.JsonUtil;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,13 +17,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/api/item/*")
-public class ItemServlet extends HttpServlet {
+@WebServlet("/api/category/*")
+public class CategoryServlet extends HttpServlet {
 
-    private ItemService itemService;
+    private CategoryService categoryService;
 
     public void init() {
-        this.itemService = new ItemServiceImpl();
+        this.categoryService = new CategoryServiceImpl();
     }
 
     @Override
@@ -38,10 +39,10 @@ public class ItemServlet extends HttpServlet {
         if (pathInfo == null || pathInfo.equals("/")) {
 
             try {
-                List<ItemDTO> items = itemService.findAll();
+                List<CategoryDTO> categories = categoryService.findAll();
 
-                if (items != null) {
-                    JsonUtil.sendJson(res, items, HttpServletResponse.SC_OK);
+                if (categories != null) {
+                    JsonUtil.sendJson(res, categories, HttpServletResponse.SC_OK);
                     return;
                 }
             } catch (Exception e) {
@@ -49,24 +50,23 @@ public class ItemServlet extends HttpServlet {
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NO_CONTENT);
+            JsonUtil.sendJson(res, Map.of("error", "Category not found"), HttpServletResponse.SC_NO_CONTENT);
             return;
         }
 
-
         try {
             Long id = Long.parseLong(pathInfo.substring(1));
-            ItemDTO item = itemService.findById(id);
+            CategoryDTO category = categoryService.findById(id);
 
-            if (item != null) {
-                JsonUtil.sendJson(res, item, HttpServletResponse.SC_OK);
+            if (category != null) {
+                JsonUtil.sendJson(res, category, HttpServletResponse.SC_OK);
                 return;
             }
 
-            JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NO_CONTENT);
+            JsonUtil.sendJson(res, Map.of("error", "Category not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
-            JsonUtil.sendJson(res, Map.of("error", "Invalid item id"), HttpServletResponse.SC_BAD_REQUEST);
+            JsonUtil.sendJson(res, Map.of("error", "Invalid category id"), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -86,21 +86,21 @@ public class ItemServlet extends HttpServlet {
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
 
-                Item item = JsonUtil.extract(req, Item.class);
+                Category category = JsonUtil.extract(req, Category.class);
 
-                if (item == null) {
+                if (category == null) {
                     JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
-                ItemDTO createdItem = itemService.create(item);
+                CategoryDTO createdItem = categoryService.create(category);
 
                 if (createdItem != null) {
                     JsonUtil.sendJson(res, createdItem, HttpServletResponse.SC_CREATED);
                     return;
                 }
 
-                JsonUtil.sendJson(res, Map.of("error", "Item could not be created"), HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Category could not be created"), HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (ItemException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
@@ -123,21 +123,21 @@ public class ItemServlet extends HttpServlet {
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
 
-                Item item = JsonUtil.extract(req, Item.class);
+                Category item = JsonUtil.extract(req, Category.class);
 
                 if (item == null) {
                     JsonUtil.sendJson(res, Map.of("error", "Request body is empty"), HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
-                ItemDTO updatedItem = itemService.update(item);
+                CategoryDTO updatedCategory = categoryService.update(item);
 
-                if (updatedItem != null) {
-                    JsonUtil.sendJson(res, updatedItem, HttpServletResponse.SC_OK);
+                if (updatedCategory != null) {
+                    JsonUtil.sendJson(res, updatedCategory, HttpServletResponse.SC_OK);
                     return;
                 }
 
-                JsonUtil.sendJson(res, Map.of("error", "Item you are trying update not found"), HttpServletResponse.SC_NO_CONTENT);
+                JsonUtil.sendJson(res, Map.of("error", "Category you are trying update not found"), HttpServletResponse.SC_NO_CONTENT);
             }
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -156,25 +156,24 @@ public class ItemServlet extends HttpServlet {
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                JsonUtil.sendJson(res, Map.of("error", "Item ID is required in URL"), HttpServletResponse.SC_BAD_REQUEST);
+                JsonUtil.sendJson(res, Map.of("error", "Category ID is required in URL"), HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
             long id = Long.parseLong(pathInfo.substring(1));
-            boolean result = itemService.delete(id);
+            boolean result = categoryService.delete(id);
 
             if (result) {
                 JsonUtil.sendJson(res, Map.of("message", "Successfully deleted"), HttpServletResponse.SC_OK);
             } else {
-                JsonUtil.sendJson(res, Map.of("error", "Item not found"), HttpServletResponse.SC_NO_CONTENT);
+                JsonUtil.sendJson(res, Map.of("error", "Category not found"), HttpServletResponse.SC_NO_CONTENT);
             }
 
         } catch (NumberFormatException e) {
-            JsonUtil.sendJson(res, Map.of("error", "Invalid item ID "), HttpServletResponse.SC_BAD_REQUEST);
+            JsonUtil.sendJson(res, Map.of("error", "Invalid category ID "), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-
 
 }

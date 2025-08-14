@@ -25,9 +25,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDTO> findAll() {
-        List<Item> items = itemIRepository.findAll();
+        List<Item> categories = itemIRepository.findAll();
 
-        return !items.isEmpty() ? items.stream()
+        return !categories.isEmpty() ? categories.stream()
                 .map(ItemMapper::toItemDTO)
                 .toList() : null;
     }

@@ -6,24 +6,8 @@ import com.pahanaedu.business.user.module.staff.model.Staff;
 
 public class StaffMapper {
 
-//    public static StaffAuthorizationDTO toStaffAuthorizationDTO(Staff staff) {
-//        return new StaffAuthorizationDTO(staff.getId(), staff.getUsername(), staff.getPassword());
-//    }
-//
-//    public static StaffRequestAuthorizationDTO toStaffRequestAuthorizationDTO(Staff staff) {
-//        return new StaffRequestAuthorizationDTO(staff.getId(), staff.getUsername());
-//    }
-
     public static StaffWithoutPasswordDTO toStaffWithoutPasswordDTO(Staff staff) {
         return new StaffWithoutPasswordDTO(staff.getId(), staff.getName(), staff.getRole(), staff.getUsername(), staff.getIsActive(), staff.getCreatedAt(), staff.getUpdatedAt());
     }
-
-//    public static StaffCreationDTO toStaffCreationDTO(Staff staff) {
-//        return new StaffCreationDTO(staff.getName(), staff.getUsername(), staff.getPassword());
-//    }
-//
-//    public static Staff toStaff(StaffCreationDTO staffCreationDTO) {
-//        return new Staff(staffCreationDTO.name(), staffCreationDTO.username(), staffCreationDTO.password());
-//    }
 
 }

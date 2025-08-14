@@ -44,7 +44,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> findAll() {
-        List<Item> items = new ArrayList<>();
+        List<Item> categories = new ArrayList<>();
         String query = "select * from item i join category c on c.id = i.category_id";
 
         try (
@@ -53,15 +53,15 @@ public class ItemRepositoryImpl implements ItemRepository {
         ) {
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                items.add(ItemUtils.getItemByResultSet(result));
+                categories.add(ItemUtils.getItemByResultSet(result));
             }
-            System.out.println(items);
+            System.out.println(categories);
 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        return items;
+        return categories;
     }
 
     @Override

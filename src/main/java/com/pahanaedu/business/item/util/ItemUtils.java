@@ -1,6 +1,5 @@
 package com.pahanaedu.business.item.util;
 
-import com.pahanaedu.business.category.model.Category;
 import com.pahanaedu.business.item.exception.ItemException;
 import com.pahanaedu.business.item.model.Item;
 
@@ -15,7 +14,7 @@ public class ItemUtils {
                 result.getString("item_name"),
                 result.getString("description"),
                 result.getString("brand"),
-                new Category(result.getInt("category_id"), result.getString("category_name")),
+                new com.pahanaedu.business.category.model.Category(result.getInt("category_id"), result.getString("category_name")),
                 result.getInt("price"),
                 result.getInt("stock"),
                 result.getTimestamp("created_at").toLocalDateTime(),
