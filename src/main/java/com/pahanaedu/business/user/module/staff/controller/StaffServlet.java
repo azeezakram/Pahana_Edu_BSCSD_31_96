@@ -179,11 +179,21 @@ public class StaffServlet extends HttpServlet {
                     return;
                 }
 
-                StaffWithoutPasswordDTO createdStaff = staffService.update(staff);
-                if (createdStaff != null) {
-                    JsonUtil.sendJson(res, createdStaff, HttpServletResponse.SC_CREATED);
+                StaffWithoutPasswordDTO currentStaff = staffService.findById(staff.getId());
+
+                StaffWithoutPasswordDTO updatedStaff = staffService.update(staff);
+
+                if (updatedStaff != null) {
+                    JsonUtil.sendJson(res, updatedStaff, HttpServletResponse.SC_CREATED);
+
+                    String sessionUsername = (String) req.getSession().getAttribute("staff");
+                    if (sessionUsername != null && sessionUsername.equals(currentStaff.username())) {
+                        req.getSession().setAttribute("staff", updatedStaff.username());
+                    }
+
                     return;
                 }
+
 
                 JsonUtil.sendJson(res, Map.of("error", "Staff could not be updated"), HttpServletResponse.SC_BAD_REQUEST);
             }

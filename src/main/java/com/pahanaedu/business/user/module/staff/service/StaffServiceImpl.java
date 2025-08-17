@@ -61,23 +61,22 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public StaffWithoutPasswordDTO update(Staff staff) {
+        Staff existing = staffRepository.findById(staff.getId());
+        if (existing == null) throw new RuntimeException("Staff not found");
 
         Staff usernameCheck = staffRepository.findByUsername(staff.getUsername());
         if (usernameCheck != null && !usernameCheck.getId().equals(staff.getId())) {
             throw new StaffUsernameAlreadyExistException("Username already taken by another staff");
         }
 
-        if (usernameCheck != null && usernameCheck.getPassword() != null && staff.getPassword() == null) {
-            staff.setPassword(usernameCheck.getPassword());
-        } else {
-            Staff passwordData = staffRepository.findById(staff.getId());
-            staff.setPassword(passwordData.getPassword());
+        if (staff.getPassword() == null || staff.getPassword().isBlank()) {
+            staff.setPassword(existing.getPassword());
         }
 
         Staff updatedStaff = staffRepository.update(staff);
         return findById(updatedStaff.getId());
-
     }
+
 
     @Override
     public boolean delete(Long id) {
