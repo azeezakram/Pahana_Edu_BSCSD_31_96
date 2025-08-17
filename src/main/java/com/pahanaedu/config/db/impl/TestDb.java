@@ -4,28 +4,29 @@ import com.pahanaedu.config.db.factory.DbConnection;
 
 public class TestDb implements DbConnection {
 
-    private static final DbConnection DB = new TestDb();
-    private final static String url = "jdbc:postgresql://localhost:5432/pahana_edu_test_31_96";
-    private final static String username = "postgres";
-    private final static String password = "postgresdb";
+    private static final DbConnection INSTANCE = new TestDb();
+    private static final String URL = "jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1";
+    private static final String USERNAME = "sa";
+    private static final String PASSWORD = "";
 
 
-    public static DbConnection getInstance() {
-        return DB;
+    public static DbConnection getInstance() throws ClassNotFoundException {
+        Class.forName("org.h2.Driver");
+        return INSTANCE;
     }
 
     @Override
     public String getUrl() {
-        return url;
+        return URL;
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return USERNAME;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return PASSWORD;
     }
 }

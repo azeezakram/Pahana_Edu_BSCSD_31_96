@@ -16,10 +16,11 @@ import static com.pahanaedu.business.user.module.staff.util.StaffUtils.getStaffB
 public class StaffRepositoryImpl implements StaffRepository {
 
     private final DbConnectionFactory dbConnectionFactoryImpl;
-    private static final String DATABASE_TYPE = "production";
+    private final String DATABASE_TYPE;
 
-    public StaffRepositoryImpl() {
+    public StaffRepositoryImpl(String DATABASE_TYPE) {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
+        this.DATABASE_TYPE = DATABASE_TYPE;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class StaffRepositoryImpl implements StaffRepository {
             }
             System.out.println(staff);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -62,7 +63,7 @@ public class StaffRepositoryImpl implements StaffRepository {
                 staffs.add(getStaffByResultSet(result));
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -123,7 +124,7 @@ public class StaffRepositoryImpl implements StaffRepository {
 
             staff.setId(generatedId);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -180,7 +181,7 @@ public class StaffRepositoryImpl implements StaffRepository {
             }
             connection.commit();
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -202,7 +203,7 @@ public class StaffRepositoryImpl implements StaffRepository {
             int rowsAffected = statement.executeUpdate();
             isDeleted = rowsAffected > 0;
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -225,7 +226,7 @@ public class StaffRepositoryImpl implements StaffRepository {
                 staff = getStaffByResultSet(result);
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

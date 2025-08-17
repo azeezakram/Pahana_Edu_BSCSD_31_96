@@ -18,9 +18,9 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemIRepository;
     private final CategoryService categoryService;
 
-    public ItemServiceImpl() {
-        this.itemIRepository = new ItemRepositoryImpl();
-        this.categoryService = new CategoryServiceImpl();
+    public ItemServiceImpl(String dbType) {
+        this.itemIRepository = new ItemRepositoryImpl(dbType);
+        this.categoryService = new CategoryServiceImpl(dbType);
     }
 
     @Override

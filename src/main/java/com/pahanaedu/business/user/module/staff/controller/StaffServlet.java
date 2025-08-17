@@ -23,7 +23,7 @@ public class StaffServlet extends HttpServlet {
     private StaffService staffService;
 
     public void init() {
-        this.staffService = new StaffServiceImpl();
+        this.staffService = new StaffServiceImpl("production");
     }
 
     @Override

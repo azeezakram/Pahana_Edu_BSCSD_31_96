@@ -22,7 +22,7 @@ public class ItemServlet extends HttpServlet {
     private ItemService itemService;
 
     public void init() {
-        this.itemService = new ItemServiceImpl();
+        this.itemService = new ItemServiceImpl("production");
     }
 
     @Override

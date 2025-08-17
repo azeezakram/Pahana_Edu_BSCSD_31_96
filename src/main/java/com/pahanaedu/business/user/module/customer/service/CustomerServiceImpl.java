@@ -14,8 +14,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    public CustomerServiceImpl() {
-        this.customerRepository = new CustomerRepositoryImpl();
+    public CustomerServiceImpl(String dbType) {
+        this.customerRepository = new CustomerRepositoryImpl(dbType);
     }
 
     @Override

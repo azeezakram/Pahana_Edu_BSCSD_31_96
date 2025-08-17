@@ -12,10 +12,11 @@ import java.util.List;
 public class CategoryRepositoryImpl implements CategoryRepository {
 
     private final DbConnectionFactory dbConnectionFactory;
-    private static final String DATABASE_TYPE = "production";
+    private final String DATABASE_TYPE;
 
-    public CategoryRepositoryImpl() {
+    public CategoryRepositoryImpl(String DATABASE_TYPE) {
         this.dbConnectionFactory = new DbConnectionFactoryImpl();
+        this.DATABASE_TYPE = DATABASE_TYPE;
     }
 
     @Override

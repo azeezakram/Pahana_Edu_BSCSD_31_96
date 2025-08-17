@@ -23,7 +23,7 @@ public class SalesHistoryServlet extends HttpServlet {
 
     @Override
     public void init() {
-        this.salesHistoryService = new SalesHistoryServiceImpl();
+        this.salesHistoryService = new SalesHistoryServiceImpl("production");
     }
 
     @Override

@@ -28,11 +28,11 @@ public class SalesHistoryServiceImpl implements SalesHistoryService {
     private final ItemService itemService;
     private final CustomerServiceImpl customerService;
 
-    public SalesHistoryServiceImpl() {
-        this.salesHistoryRepository = new SalesHistoryRepositoryImpl();
-        this.salesItemService = new SalesItemServiceImpl();
-        this.itemService = new ItemServiceImpl();
-        this.customerService = new CustomerServiceImpl();
+    public SalesHistoryServiceImpl(String dbType) {
+        this.salesHistoryRepository = new SalesHistoryRepositoryImpl(dbType);
+        this.salesItemService = new SalesItemServiceImpl(dbType);
+        this.itemService = new ItemServiceImpl(dbType);
+        this.customerService = new CustomerServiceImpl(dbType);
     }
 
     @Override

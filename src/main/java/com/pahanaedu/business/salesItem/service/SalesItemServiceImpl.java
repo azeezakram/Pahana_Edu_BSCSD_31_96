@@ -18,9 +18,9 @@ public class SalesItemServiceImpl implements SalesItemService {
     private final SalesItemRepository salesItemRepository;
     private final ItemService itemService;
 
-    public SalesItemServiceImpl() {
-        this.salesItemRepository = new SalesItemRepositoryImpl();
-        this.itemService = new ItemServiceImpl();
+    public SalesItemServiceImpl(String dbType) {
+        this.salesItemRepository = new SalesItemRepositoryImpl(dbType);
+        this.itemService = new ItemServiceImpl(dbType);
     }
 
     @Override

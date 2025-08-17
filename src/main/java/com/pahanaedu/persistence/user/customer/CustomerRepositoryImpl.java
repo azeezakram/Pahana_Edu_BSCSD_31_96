@@ -14,10 +14,11 @@ import static com.pahanaedu.business.user.module.customer.util.CustomerUtils.get
 public class CustomerRepositoryImpl implements CustomerRepository {
 
     private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
-    private static final String DATABASE_TYPE = "production";
+    private final String DATABASE_TYPE;
 
-    public CustomerRepositoryImpl() {
+    public CustomerRepositoryImpl(String DATABASE_TYPE) {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
+        this.DATABASE_TYPE = DATABASE_TYPE;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             }
             System.out.println(customer);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -60,7 +61,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 customers.add(getCustomerByResultSet(result));
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -123,7 +124,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             connection.commit();
             customer.setId(generatedId);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -175,7 +176,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
             connection.commit();
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -199,7 +200,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 isDeleted = true;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -207,6 +208,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     }
 
+    @Override
     public Customer findByAccountNumber(String accountNumber) {
 
         Customer customer = null;
@@ -223,7 +225,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 customer = getCustomerByResultSet(result);
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -231,6 +233,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
 
     }
 
+    @Override
     public boolean deleteByAccountNumber(String accountNumber) {
 
         boolean isDeleted = false;
@@ -247,7 +250,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 isDeleted = true;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 

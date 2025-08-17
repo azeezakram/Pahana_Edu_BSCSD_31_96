@@ -51,7 +51,7 @@ public class SalesHistory {
         return salesItems;
     }
 
-    public void setSellItems(List<SalesItem> salesItems) {
+    public void setSalesItems(List<SalesItem> salesItems) {
         this.salesItems = salesItems;
     }
 

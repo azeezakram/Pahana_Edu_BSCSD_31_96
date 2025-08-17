@@ -11,8 +11,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepositoryImpl categoryRepository;
 
-    public CategoryServiceImpl() {
-        this.categoryRepository = new CategoryRepositoryImpl();
+    public CategoryServiceImpl(String dbType) {
+        this.categoryRepository = new CategoryRepositoryImpl(dbType);
     }
 
     @Override

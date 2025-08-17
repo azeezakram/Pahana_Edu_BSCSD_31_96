@@ -12,10 +12,11 @@ import java.util.List;
 public class SalesItemRepositoryImpl implements SalesItemRepository {
 
     private final DbConnectionFactoryImpl dbConnectionFactoryImpl;
-    private static final String DATABASE_TYPE = "production";
+    private final String DATABASE_TYPE;
 
-    public SalesItemRepositoryImpl() {
+    public SalesItemRepositoryImpl(String DATABASE_TYPE) {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
+        this.DATABASE_TYPE = DATABASE_TYPE;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class SalesItemRepositoryImpl implements SalesItemRepository {
             }
             System.out.println(salesItem);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -59,7 +60,7 @@ public class SalesItemRepositoryImpl implements SalesItemRepository {
 
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return salesItems;
@@ -102,7 +103,7 @@ public class SalesItemRepositoryImpl implements SalesItemRepository {
                 }
                 connection.commit();
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Error saving sales items for sellHistory id: " + salesHistory.getId(), e);
         }
     }
@@ -121,7 +122,7 @@ public class SalesItemRepositoryImpl implements SalesItemRepository {
                 return false;
             }
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to delete sales item with id: " + id, e);
         }
         return true;

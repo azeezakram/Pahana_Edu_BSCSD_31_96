@@ -18,8 +18,8 @@ public class StaffServiceImpl implements StaffService {
 
     private final StaffRepository staffRepository;
 
-    public StaffServiceImpl() {
-        this.staffRepository = new StaffRepositoryImpl();
+    public StaffServiceImpl(String dbType) {
+        this.staffRepository = new StaffRepositoryImpl(dbType);
     }
 
     @Override

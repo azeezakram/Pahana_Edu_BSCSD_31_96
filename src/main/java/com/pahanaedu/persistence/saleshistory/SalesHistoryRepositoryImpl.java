@@ -13,10 +13,11 @@ import java.util.List;
 public class SalesHistoryRepositoryImpl implements SalesHistoryRepository {
 
     private final DbConnectionFactory dbConnectionFactoryImpl;
-    private static final String DATABASE_TYPE = "production";
+    private final String DATABASE_TYPE;
 
-    public SalesHistoryRepositoryImpl() {
+    public SalesHistoryRepositoryImpl(String DATABASE_TYPE) {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
+        this.DATABASE_TYPE = DATABASE_TYPE;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class SalesHistoryRepositoryImpl implements SalesHistoryRepository {
                     salesHistory = SalesHistoryUtils.getSalesHistoryByResultSet(resultSet);
                 }
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -56,7 +57,7 @@ public class SalesHistoryRepositoryImpl implements SalesHistoryRepository {
                     sellHistories.add(salesHistory);
                 }
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -101,7 +102,7 @@ public class SalesHistoryRepositoryImpl implements SalesHistoryRepository {
 
             salesHistory.setId(generatedId);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -118,16 +119,11 @@ public class SalesHistoryRepositoryImpl implements SalesHistoryRepository {
             statement.setLong(1, id);
             int rowsAffected = statement.executeUpdate();
 
-            if (rowsAffected == 0) {
-                return false;
-            }
+            return rowsAffected != 0;
 
-            return true;
-
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to delete sales history with id: " + id, e);
         }
     }
-
 
 }

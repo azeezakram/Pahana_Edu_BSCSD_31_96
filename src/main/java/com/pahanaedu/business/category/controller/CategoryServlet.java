@@ -23,7 +23,7 @@ public class CategoryServlet extends HttpServlet {
     private CategoryService categoryService;
 
     public void init() {
-        this.categoryService = new CategoryServiceImpl();
+        this.categoryService = new CategoryServiceImpl("production");
     }
 
     @Override
