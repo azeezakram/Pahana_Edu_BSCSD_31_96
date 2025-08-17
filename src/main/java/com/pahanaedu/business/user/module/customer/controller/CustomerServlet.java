@@ -48,24 +48,25 @@ public class CustomerServlet extends HttpServlet {
         }
 
         try {
-            Long id = Long.parseLong(pathInfo.substring(1));
-            CustomerDTO customer = customerService.findById(id);
 
-            if (customer != null) {
-                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
-                return;
-            }
+            String accno = req.getParameter("accno");
 
-            JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NO_CONTENT);
+            if (accno == null) {
+                Long id = Long.parseLong(pathInfo.substring(1));
+                CustomerDTO customer = customerService.findById(id);
 
-        } catch (NumberFormatException e) {
+                if (customer != null) {
+                    JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
+                    return;
+                }
+            } else {
+                String accountNumber = pathInfo.substring(1);
+                CustomerDTO customer = customerService.findByAccountNumber(accountNumber);
 
-            String accountNumber = pathInfo.substring(1);
-            CustomerDTO customer = customerService.findByAccountNumber(accountNumber);
-
-            if (customer != null) {
-                JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
-                return;
+                if (customer != null) {
+                    JsonUtil.sendJson(res, customer, HttpServletResponse.SC_OK);
+                    return;
+                }
             }
 
             JsonUtil.sendJson(res, Map.of("error", "Customer not found"), HttpServletResponse.SC_NO_CONTENT);

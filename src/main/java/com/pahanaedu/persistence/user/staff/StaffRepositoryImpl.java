@@ -18,7 +18,7 @@ public class StaffRepositoryImpl implements StaffRepository {
     private final DbConnectionFactory dbConnectionFactoryImpl;
     private static final String DATABASE_TYPE = "production";
 
-    public StaffRepositoryImpl () {
+    public StaffRepositoryImpl() {
         this.dbConnectionFactoryImpl = new DbConnectionFactoryImpl();
     }
 
@@ -71,7 +71,7 @@ public class StaffRepositoryImpl implements StaffRepository {
 
     @Override
     public Staff save(Staff staff) {
-        
+
         int result;
         long generatedId = 0L;
 
@@ -164,7 +164,15 @@ public class StaffRepositoryImpl implements StaffRepository {
             if (result > 0) {
                 try (PreparedStatement updateStaffStmt = connection.prepareStatement(updateStaffSQL)) {
                     updateStaffStmt.setString(1, staff.getUsername());
-                    updateStaffStmt.setString(2, StaffUtils.hashPassword(staff.getPassword()));
+
+                    String finalPassword = staff.getPassword();
+
+                    if (finalPassword != null && finalPassword.length() != 64) {
+                        finalPassword = StaffUtils.hashPassword(finalPassword);
+                    }
+
+                    updateStaffStmt.setString(2, finalPassword);
+
                     updateStaffStmt.setBoolean(3, staff.getIsActive());
                     updateStaffStmt.setLong(4, staff.getId());
                     updateStaffStmt.executeUpdate();

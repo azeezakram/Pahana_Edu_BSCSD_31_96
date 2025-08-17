@@ -78,6 +78,7 @@ public class SalesHistoryServlet extends HttpServlet {
             JsonUtil.sendJson(res, Map.of("error", "Invalid sales history ID"), HttpServletResponse.SC_BAD_REQUEST);
 
         } catch (Exception e) {
+            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -114,6 +115,7 @@ public class SalesHistoryServlet extends HttpServlet {
         } catch (SalesHistoryException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
+            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

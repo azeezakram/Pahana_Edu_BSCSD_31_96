@@ -22,8 +22,8 @@ public class SalesHistoryUtils {
         return salesHistory == null ||
                 salesHistory.getCustomerId() == null ||
                 salesHistory.getCustomerId() < 1 ||
-                salesHistory.getSellItems() == null ||
-                salesHistory.getSellItems().isEmpty();
+                salesHistory.getSalesItems() == null ||
+                salesHistory.getSalesItems().isEmpty();
     }
 
 }

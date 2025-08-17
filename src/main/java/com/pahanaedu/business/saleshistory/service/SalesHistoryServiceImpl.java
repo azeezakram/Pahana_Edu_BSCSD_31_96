@@ -123,7 +123,7 @@ public class SalesHistoryServiceImpl implements SalesHistoryService {
         }
 
         Integer grandTotal = 0;
-        for (SalesItem salesItem : salesHistory.getSellItems()) {
+        for (SalesItem salesItem : salesHistory.getSalesItems()) {
             ItemDTO item = itemService.findById(salesItem.getItemId());
             if (item == null) {
                 throw new SalesHistoryException("Item with ID " + salesItem.getItemId() + " not found");
@@ -147,7 +147,7 @@ public class SalesHistoryServiceImpl implements SalesHistoryService {
         salesHistory.setGrandTotal(grandTotal);
 
         System.out.println(salesHistory);
-        System.out.println(salesHistory.getSellItems());
+        System.out.println(salesHistory.getSalesItems());
 
         SalesHistory newSalesHistory = salesHistoryRepository.save(salesHistory);
         salesItemService.createBySellHistory(salesHistory);
@@ -158,7 +158,6 @@ public class SalesHistoryServiceImpl implements SalesHistoryService {
     @Override
     public boolean delete(Long id) {
         boolean isSellItemDeleted = salesItemService.delete(id);
-
         if (isSellItemDeleted) {
             return salesHistoryRepository.delete(id);
         } else {

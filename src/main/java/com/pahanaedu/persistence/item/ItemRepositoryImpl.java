@@ -22,7 +22,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item findById(Long id) {
         Item item = null;
-        String query = "select * from item i join category c on c.id = i.category_id where i.id = ?";
+        String query = "select * from item where id = ?";
 
         try (
                 Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);
@@ -45,7 +45,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<Item> findAll() {
         List<Item> categories = new ArrayList<>();
-        String query = "select * from item i join category c on c.id = i.category_id";
+        String query = "select * from item";
 
         try (
                 Connection connection = dbConnectionFactory.getConnection(DATABASE_TYPE);

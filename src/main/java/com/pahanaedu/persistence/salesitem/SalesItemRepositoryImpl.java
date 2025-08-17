@@ -87,7 +87,7 @@ public class SalesItemRepositoryImpl implements SalesItemRepository {
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
-                for (SalesItem salesItem : salesHistory.getSellItems()) {
+                for (SalesItem salesItem : salesHistory.getSalesItems()) {
                     statement.setLong(1, salesHistory.getId());
                     statement.setLong(2, salesItem.getItemId());
                     statement.setInt(3, salesItem.getSellPrice());

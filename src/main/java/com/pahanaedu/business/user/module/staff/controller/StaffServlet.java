@@ -65,7 +65,16 @@ public class StaffServlet extends HttpServlet {
             JsonUtil.sendJson(res, Map.of("error", "Staffs not found"), HttpServletResponse.SC_NO_CONTENT);
 
         } catch (NumberFormatException e) {
-            JsonUtil.sendJson(res, Map.of("error", "Invalid staff id"), HttpServletResponse.SC_BAD_REQUEST);
+
+            String username = pathInfo.substring(1);
+            StaffWithoutPasswordDTO staff = staffService.findByUsername(username);
+
+            if (staff != null) {
+                JsonUtil.sendJson(res, staff, HttpServletResponse.SC_OK);
+                return;
+            }
+
+            JsonUtil.sendJson(res, Map.of("error", "Staffs not found"), HttpServletResponse.SC_NO_CONTENT);
         } catch (Exception e) {
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -182,6 +191,7 @@ public class StaffServlet extends HttpServlet {
         } catch (StaffUsernameAlreadyExistException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
+            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

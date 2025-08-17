@@ -172,6 +172,7 @@ public class ItemServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             JsonUtil.sendJson(res, Map.of("error", "Invalid item ID "), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
+            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal server error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

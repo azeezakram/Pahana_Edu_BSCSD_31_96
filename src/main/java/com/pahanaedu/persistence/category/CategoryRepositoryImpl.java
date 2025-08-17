@@ -120,6 +120,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
                 PreparedStatement statement = connection.prepareStatement(query)
         ) {
             statement.setString(1, category.getCategoryName());
+            statement.setInt(2, category.getId());
             result = statement.executeUpdate();
 
             if (result < 0) {
