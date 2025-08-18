@@ -9,6 +9,7 @@ import com.pahanaedu.business.item.model.Item;
 import com.pahanaedu.business.item.service.ItemService;
 import com.pahanaedu.business.item.service.ItemServiceImpl;
 import com.pahanaedu.business.salesItem.model.SalesItem;
+import com.pahanaedu.business.saleshistory.facade.SalesHistoryFacade;
 import com.pahanaedu.business.saleshistory.model.SalesHistory;
 import com.pahanaedu.business.user.module.customer.dto.CustomerDTO;
 import com.pahanaedu.business.user.module.customer.model.Customer;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SalesHistoryServiceImplTest {
 
+    private SalesHistoryFacade salesHistoryFacade;
     private SalesHistoryService salesHistoryService;
     private ItemService itemService;
     private CustomerService customerService;
@@ -32,6 +34,7 @@ class SalesHistoryServiceImplTest {
     @BeforeEach
     void setUp() {
         TestDbInitializer.initializeTestDb();
+        this.salesHistoryFacade = new SalesHistoryFacade("test");
         this.salesHistoryService = new SalesHistoryServiceImpl("test");
         this.itemService = new ItemServiceImpl("test");
         this.customerService = new CustomerServiceImpl("test");
@@ -70,7 +73,7 @@ class SalesHistoryServiceImplTest {
         salesHistory.setSalesItems(salesItems);
         salesHistory.setGrandTotal(salesItem.getSubTotal() + salesItem2.getSubTotal());
 
-        var created = salesHistoryService.create(salesHistory);
+        var created = salesHistoryFacade.createSalesHistory(salesHistory);
 
         assertNotNull(created);
         assertEquals(createdCustomer.getId(), created.getCustomer().getId());
@@ -118,8 +121,9 @@ class SalesHistoryServiceImplTest {
         SalesHistory salesHistory = new SalesHistory();
         salesHistory.setCustomerId(createdCustomer.getId());
         salesHistory.setSalesItems(List.of(sellItem));
+        salesHistory.setGrandTotal(546);
 
-        var created = salesHistoryService.create(salesHistory);
+        var created = salesHistoryFacade.createSalesHistory(salesHistory);
 
         var found = salesHistoryService.findById(created.getId());
         assertNotNull(found);
@@ -145,8 +149,9 @@ class SalesHistoryServiceImplTest {
         SalesHistory salesHistory = new SalesHistory();
         salesHistory.setCustomerId(createdCustomer.getId());
         salesHistory.setSalesItems(List.of(salesItem));
+        salesHistory.setGrandTotal(546);
 
-        var created = salesHistoryService.create(salesHistory);
+        var created = salesHistoryFacade.createSalesHistory(salesHistory);
         boolean deleted = salesHistoryService.delete(created.getId());
         assertTrue(deleted);
 
