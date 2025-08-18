@@ -2,6 +2,7 @@ package com.pahanaedu.business.saleshistory.controller;
 
 import com.pahanaedu.business.saleshistory.dto.SalesHistoryDTO;
 import com.pahanaedu.business.saleshistory.exception.SalesHistoryException;
+import com.pahanaedu.business.saleshistory.facade.SalesHistoryFacade;
 import com.pahanaedu.business.saleshistory.model.SalesHistory;
 import com.pahanaedu.business.saleshistory.service.SalesHistoryService;
 import com.pahanaedu.business.saleshistory.service.SalesHistoryServiceImpl;
@@ -20,10 +21,12 @@ import java.util.Map;
 public class SalesHistoryServlet extends HttpServlet {
 
     private SalesHistoryService salesHistoryService;
+    private SalesHistoryFacade salesHistoryFacade;
 
     @Override
     public void init() {
         this.salesHistoryService = new SalesHistoryServiceImpl("production");
+        this.salesHistoryFacade = new SalesHistoryFacade("production");
     }
 
     @Override
@@ -43,7 +46,7 @@ public class SalesHistoryServlet extends HttpServlet {
             List<SalesHistoryDTO> salesHistories;
 
             if (includeItems) {
-                salesHistories = salesHistoryService.findAllWithItems();
+                salesHistories = salesHistoryFacade.fetchAllWithItems();
             } else {
                 salesHistories = salesHistoryService.findAll();
             }
@@ -78,7 +81,6 @@ public class SalesHistoryServlet extends HttpServlet {
             JsonUtil.sendJson(res, Map.of("error", "Invalid sales history ID"), HttpServletResponse.SC_BAD_REQUEST);
 
         } catch (Exception e) {
-            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -103,7 +105,7 @@ public class SalesHistoryServlet extends HttpServlet {
                     return;
                 }
 
-                SalesHistoryDTO salesHistoryDTO = salesHistoryService.create(salesHistory);
+                SalesHistoryDTO salesHistoryDTO = salesHistoryFacade.createSalesHistory(salesHistory);
 
                 if (salesHistoryDTO != null) {
                     JsonUtil.sendJson(res, salesHistoryDTO, HttpServletResponse.SC_CREATED);
@@ -115,7 +117,6 @@ public class SalesHistoryServlet extends HttpServlet {
         } catch (SalesHistoryException e) {
             JsonUtil.sendJson(res, Map.of("error", e.getMessage()), HttpServletResponse.SC_CONFLICT);
         } catch (Exception e) {
-            e.printStackTrace();
             JsonUtil.sendJson(res, Map.of("error", "Internal error"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

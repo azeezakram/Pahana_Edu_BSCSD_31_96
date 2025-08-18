@@ -17,4 +17,15 @@ public class SalesItemMapper {
                 .build();
     }
 
+    public static SalesItem toSalesItem(SalesItemDTO salesItem) {
+        return new SalesItem(
+                salesItem.getId(),
+                salesItem.getItem().getId(),
+                salesItem.getSalesHistoryId(),
+                salesItem.getSellPrice(),
+                salesItem.getUnit(),
+                salesItem.getSubTotal()
+        );
+    }
+
 }

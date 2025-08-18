@@ -39,8 +39,19 @@ public class SalesItemServiceImpl implements SalesItemService {
     public List<SalesItemDTO> findBySellHistoryId(Long sellHistoryId) {
         List<SalesItemDTO> salesItemDTOS = new ArrayList<>();
         List<SalesItem> sellItems = salesItemRepository.findBySellHistoryId(sellHistoryId);
-        sellItems.forEach(System.out::println);
 
+        return addSalesItemToList(salesItemDTOS, sellItems);
+    }
+
+    @Override
+    public List<SalesItemDTO> findAll() {
+        List<SalesItemDTO> salesItemDTOS = new ArrayList<>();
+        List<SalesItem> sellItems = salesItemRepository.findAll();
+
+        return addSalesItemToList(salesItemDTOS, sellItems);
+    }
+
+    private List<SalesItemDTO> addSalesItemToList(List<SalesItemDTO> salesItemDTOS, List<SalesItem> sellItems) {
         if (!sellItems.isEmpty()) {
             for (SalesItem salesItem : sellItems) {
                 if (salesItem != null) {
@@ -51,11 +62,6 @@ public class SalesItemServiceImpl implements SalesItemService {
         }
 
         return salesItemDTOS;
-    }
-
-    @Override
-    public List<SalesItemDTO> findAll() {
-        return List.of();
     }
 
     @Override

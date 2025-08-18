@@ -69,11 +69,28 @@ public class SalesItemRepositoryImpl implements SalesItemRepository {
 
     @Override
     public List<SalesItem> findAll() {
-        return List.of();
+        List<SalesItem> salesItems = new ArrayList<>();
+        String query = "SELECT * FROM sales_item";
+
+        try (
+                Connection connection = dbConnectionFactoryImpl.getConnection(DATABASE_TYPE);
+                PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                salesItems.add(SalesItemUtils.getSalesItemByResultSet(rs));
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return salesItems;
     }
 
     @Override
-    public SalesItem save(SalesItem sellitem) {
+    public SalesItem save(SalesItem salesItem) {
         return null;
     }
 
