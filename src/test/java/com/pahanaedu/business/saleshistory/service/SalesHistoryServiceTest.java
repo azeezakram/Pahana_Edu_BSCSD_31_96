@@ -24,7 +24,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SalesHistoryServiceImplTest {
-
     private SalesHistoryFacade salesHistoryFacade;
     private SalesHistoryService salesHistoryService;
     private ItemService itemService;
@@ -39,7 +38,6 @@ class SalesHistoryServiceImplTest {
         this.itemService = new ItemServiceImpl("test");
         this.customerService = new CustomerServiceImpl("test");
         this.categoryService = new CategoryServiceImpl("test");
-
     }
 
     @Test
@@ -52,7 +50,8 @@ class SalesHistoryServiceImplTest {
         Item item2 = new Item("Mouse", 50, 20);
         item2.setCategory(new Category(category.id(), category.categoryName()));
         ItemDTO createdItem2 = itemService.create(item2);
-        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe1","123 Main St", "1234567890"));
+        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe1",
+                "123 Main St", "1234567890"));
 
         SalesItem salesItem = new SalesItem();
         salesItem.setItemId(createdItem1.getId());
@@ -97,7 +96,8 @@ class SalesHistoryServiceImplTest {
         salesItem.setItemId(createdItem.getId());
         salesItem.setUnit(100);
 
-        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe2","123 Main St", "1234567890"));
+        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe2",
+                "123 Main St", "1234567890"));
 
         SalesHistory salesHistory = new SalesHistory();
         salesHistory.setCustomerId(createdCustomer.getId());
@@ -112,7 +112,8 @@ class SalesHistoryServiceImplTest {
         Item item = new Item("Laptop", 1500, 10);
         item.setCategory(new Category(category.id(), category.categoryName()));
         ItemDTO createdItem = itemService.create(item);
-        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe3","123 Main St", "1234567890"));
+        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe3",
+                "123 Main St", "1234567890"));
 
         SalesItem sellItem = new SalesItem();
         sellItem.setItemId(createdItem.getId());
@@ -139,8 +140,8 @@ class SalesHistoryServiceImplTest {
         Item item = new Item("Laptop", 1500, 10);
         item.setCategory(new Category(category.id(), category.categoryName()));
         ItemDTO createdItem = itemService.create(item);
-        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe4","123 Main St", "1234567890"));
-
+        CustomerDTO createdCustomer = customerService.create(new Customer("John Doe", "johndoe4",
+                "123 Main St", "1234567890"));
 
         SalesItem salesItem = new SalesItem();
         salesItem.setItemId(createdItem.getId());

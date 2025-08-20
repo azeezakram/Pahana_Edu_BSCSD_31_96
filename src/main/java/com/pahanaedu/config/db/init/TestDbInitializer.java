@@ -1,6 +1,7 @@
 package com.pahanaedu.config.db.init;
 
 import com.pahanaedu.config.db.impl.TestDb;
+import org.h2.tools.Server;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -17,8 +18,7 @@ public class TestDbInitializer {
         if (initialized) return;
 
         try {
-
-            Class.forName("org.h2.Driver");
+            Server server = Server.createWebServer("-web", "-webPort", "9090").start();
 
             try (Connection conn = DriverManager.getConnection(
                     TestDb.getInstance().getUrl(),

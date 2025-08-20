@@ -21,4 +21,21 @@ public class ItemMapper {
                 .build();
     }
 
+    public static Item toItemModel(ItemDTO itemDTO) {
+        return new Item(
+                itemDTO.getId(),
+                itemDTO.getItemName(),
+                itemDTO.getDescription(),
+                itemDTO.getDescription(),
+                itemDTO.getCategory(),
+                itemDTO.getPrice(),
+                itemDTO.getStock(),
+                itemDTO.getCreatedAt(),
+                itemDTO.getUpdatedAt()
+        );
+    }
+
 }
+
+
+

@@ -9,7 +9,6 @@ public class TestDb implements DbConnection {
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "";
 
-
     public static DbConnection getInstance() throws ClassNotFoundException {
         Class.forName("org.h2.Driver");
         return INSTANCE;
@@ -30,3 +29,5 @@ public class TestDb implements DbConnection {
         return PASSWORD;
     }
 }
+
+

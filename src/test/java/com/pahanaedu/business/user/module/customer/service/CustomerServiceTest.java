@@ -91,15 +91,4 @@ class CustomerServiceImplTest {
         assertNull(afterDelete);
     }
 
-//    @Test
-//    void testDeleteByAccountNumber() {
-//        Customer customer = new Customer("Customer 8", "CUST-008", "Address 8", "88888");
-//
-//        customerService.create(customer);
-//        boolean deleted = customerService.deleteByAccountNumber("CUST-008");
-//        assertTrue(deleted);
-//
-//        var afterDelete = customerService.findByAccountNumber("CUST-008");
-//        assertNull(afterDelete);
-//    }
 }

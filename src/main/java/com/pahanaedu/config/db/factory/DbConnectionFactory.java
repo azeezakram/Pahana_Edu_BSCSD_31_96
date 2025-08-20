@@ -5,3 +5,4 @@ import java.sql.Connection;
 public interface DbConnectionFactory {
     Connection getConnection(String db) throws ClassNotFoundException;
 }
+
